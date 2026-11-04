@@ -29,7 +29,7 @@ flowchart LR
   A[GoliathApp<br/>auth, RBAC.Sessions, portal, workers] -.inherited by.-> P
 ```
 
-GoliathCrop inherits GoliathApp auth (`RBAC.Sessions`), the portal, PostgreSQL stored procedures as the API, and workers that claim tasks through goliath-gateway, with Postgres pub/sub waking workers for event-triggered tasks. Geometry is PostGIS, readings are TimescaleDB, and rasters are COGs on S3-compatible storage.
+GoliathCrop inherits GoliathApp auth (`RBAC.Sessions`), the portal, the semantic registry (named requests + Exograph GraphQL/MCP) as the read API, typed `ActionSpec` actions, and workers that claim tasks through goliath-gateway, with Postgres pub/sub waking workers for event-triggered tasks. Geometry is PostGIS, readings are TimescaleDB, and rasters are COGs on S3-compatible storage.
 
 See the [plan](docs/plan.md) for details.
 
