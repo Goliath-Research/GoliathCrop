@@ -48,6 +48,7 @@ Raw tables are an internal detail. Users, the portal, and agents see **GoliathCr
 | `crop.sensor` | Sensor | farm, kind, field, last_reading_at | view `crop_obs.v_device` |
 | `crop.reading` | Sensor reading | sensor, ts, metric, value | function `crop_obs.fn_readings_window` (hypertable) |
 | `crop.weather` | Weather | field, date, tmin, tmax, precip, gdd, et0 | view `crop_obs.v_weather_daily` |
+| `crop.sample` | Soil / tissue sample | field, geo point, depth, kind (soil/tissue), collected_on, lab results (N, P, K, pH, OM) | view `crop_lab.v_sample` (joins samples, sample_results) |
 | `crop.scene` | Imagery scene | field, acquired_at, source, index_stats | view `crop_img.v_scene` |
 | `crop.scouting` | Scouting observation | field, observed_at, pest, severity, photo | view `crop_scout.v_observation` |
 | `crop.yield` | Yield | planting, measured_t_ha, predicted_t_ha | view `crop_yield.v_yield` |
@@ -62,6 +63,7 @@ Raw tables are an internal detail. Users, the portal, and agents see **GoliathCr
 | `crop.operation.list` | `crop.operation` | planting_id?, kind?, from, to | `crop.operation.read` | view |
 | `crop.reading.window` | `crop.reading` | sensor_id, from, to, bucket | `crop.sensor.read` | function `crop_obs.fn_readings_window` |
 | `crop.weather.daily` | `crop.weather` | field_id, from, to | `crop.weather.read` | view |
+| `crop.sample.list_by_field` | `crop.sample` | field_id, kind?, from?, to? | `crop.sample.read` | view `crop_lab.v_sample` |
 | `crop.scene.list_by_field` | `crop.scene` | field_id, from?, to? | `crop.imagery.read` | view |
 | `crop.yield.by_season` | `crop.yield` | season_id | `crop.yield.read` | view |
 | `crop.trial.results` | `crop.trial` | trial_id | `crop.trial.read` | function `crop_trial.fn_trial_results` |
@@ -112,6 +114,7 @@ Business operations are typed `ActionSpec` rows (`goliath_app.actions.spec`), pu
 | `crop.operation.record` | domain | `crop.operation` | RBAC | `crop.operation.write` | `crop.ops` |
 | `crop.sensor.ingest_batch` | domain | `crop.reading` | HIDDEN | — | `crop.ingest` |
 | `crop.weather.refresh` | domain | `crop.weather` | HIDDEN | — | `crop.weather` |
+| `crop.sample.import_lab_results` | domain | `crop.sample` | RBAC | `crop.sample.write` | `crop.ingest` |
 | `crop.scene.fetch_and_index` | domain | `crop.scene` | RBAC | `crop.imagery.write` | `crop.imagery` |
 | `crop.yield.predict` | domain | `crop.yield` | RBAC | `crop.yield.write` | `crop.model` |
 | `crop.trial.analyze` | domain | `crop.trial` | RBAC | `crop.trial.write` | `crop.model` |
@@ -155,6 +158,7 @@ GoliathCrop **adds** nodes to `portal."NavTree"` with `portal.sp_nav_register_no
 | Crop › Seasons & plantings | `crop.planting.list_by_season` | owner, agronomist, operator |
 | Crop › Operations | `crop.operation.list`; action `crop.operation.record` | owner, agronomist, operator |
 | Crop › Sensors & weather | `crop.reading.window`, `crop.weather.daily` | owner, agronomist, viewer |
+| Crop › Soil & tissue samples | `crop.sample.list_by_field`; action `crop.sample.import_lab_results` | owner, agronomist |
 | Crop › Imagery | `crop.scene.list_by_field`; action `crop.scene.fetch_and_index` | owner, agronomist |
 | Crop › Yield | `crop.yield.by_season`; action `crop.yield.predict` | owner, agronomist |
 | Crop › Trials | `crop.trial.results`; action `crop.trial.analyze` | owner, researcher |
