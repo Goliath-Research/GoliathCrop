@@ -214,6 +214,17 @@ BEGIN
       CONTINUE;
     END IF;
 
+    IF EXISTS (
+      SELECT 1
+      FROM crop_alerts.alert_events e
+      WHERE e.device_id = p_device_id
+        AND e.kind = v_rule.kind
+        AND e.resolved_at IS NULL
+        AND e.detail->>'metric' = v_rule.metric
+    ) THEN
+      CONTINUE;
+    END IF;
+
     PERFORM crop_alerts.sp_open_alert(
       v_device.farm_id,
       v_device.field_id,

@@ -41,6 +41,10 @@ CREATE TABLE IF NOT EXISTS crop_img.imagery_scenes (
 CREATE INDEX IF NOT EXISTS imagery_scenes_field_acquired_idx
   ON crop_img.imagery_scenes (field_id, acquired_at DESC);
 
+CREATE UNIQUE INDEX IF NOT EXISTS imagery_scenes_field_stac_item_uniq
+  ON crop_img.imagery_scenes (field_id, stac_item_id)
+  WHERE stac_item_id IS NOT NULL;
+
 CREATE TABLE IF NOT EXISTS crop_img.field_index_stats (
   scene_id bigint NOT NULL REFERENCES crop_img.imagery_scenes (id) ON DELETE CASCADE,
   field_id integer NOT NULL REFERENCES crop_core.fields (id) ON DELETE CASCADE,
@@ -180,6 +184,7 @@ END;
 $$;
 
 CREATE OR REPLACE FUNCTION crop_img.sp_register_drone_upload(
+  p_user_id integer,
   p_field_id integer,
   p_storage_uri text,
   p_acquired_at timestamptz DEFAULT NULL,
@@ -188,15 +193,28 @@ CREATE OR REPLACE FUNCTION crop_img.sp_register_drone_upload(
 RETURNS bigint
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = crop_img, crop_wf, pg_temp
+SET search_path = crop_img, crop_core, crop_wf, portal, pg_temp
 AS $$
 DECLARE
   v_asset_id bigint;
   v_scene_id bigint;
   v_geom geometry(Polygon, 4326);
+  v_farm_id integer;
 BEGIN
+  IF p_user_id IS NULL THEN
+    RAISE EXCEPTION 'user_id is required';
+  END IF;
   IF p_field_id IS NULL OR p_storage_uri IS NULL OR btrim(p_storage_uri) = '' THEN
     RAISE EXCEPTION 'field_id and storage_uri are required';
+  END IF;
+  SELECT fld.farm_id INTO v_farm_id
+  FROM crop_core.fields fld
+  WHERE fld.id = p_field_id;
+  IF v_farm_id IS NULL THEN
+    RAISE EXCEPTION 'unknown field_id %', p_field_id;
+  END IF;
+  IF NOT crop_core.fn_user_can_access_farm(p_user_id, v_farm_id) THEN
+    PERFORM portal.fn_semantic_raise('GS403', 'field scope denied');
   END IF;
   IF p_footprint_wkt IS NOT NULL AND btrim(p_footprint_wkt) <> '' THEN
     v_geom := ST_SetSRID(ST_GeomFromText(p_footprint_wkt), 4326);
@@ -250,6 +268,7 @@ END;
 $$;
 
 CREATE OR REPLACE FUNCTION crop_img.sp_register_stac_scene(
+  p_user_id integer,
   p_field_id integer,
   p_stac_item_id text,
   p_source text,
@@ -260,11 +279,33 @@ CREATE OR REPLACE FUNCTION crop_img.sp_register_stac_scene(
 RETURNS bigint
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = crop_img, crop_wf, pg_temp
+SET search_path = crop_img, crop_core, crop_wf, portal, pg_temp
 AS $$
 DECLARE
   v_scene_id bigint;
+  v_farm_id integer;
 BEGIN
+  IF p_user_id IS NULL THEN
+    RAISE EXCEPTION 'user_id is required';
+  END IF;
+  SELECT fld.farm_id INTO v_farm_id
+  FROM crop_core.fields fld
+  WHERE fld.id = p_field_id;
+  IF v_farm_id IS NULL THEN
+    RAISE EXCEPTION 'unknown field_id %', p_field_id;
+  END IF;
+  IF NOT crop_core.fn_user_can_access_farm(p_user_id, v_farm_id) THEN
+    PERFORM portal.fn_semantic_raise('GS403', 'field scope denied');
+  END IF;
+
+  SELECT s.id INTO v_scene_id
+  FROM crop_img.imagery_scenes s
+  WHERE s.field_id = p_field_id
+    AND s.stac_item_id = p_stac_item_id;
+  IF v_scene_id IS NOT NULL THEN
+    RETURN v_scene_id;
+  END IF;
+
   INSERT INTO crop_img.imagery_scenes (
     field_id,
     stac_item_id,
@@ -346,7 +387,7 @@ BEGIN
     WHERE id = p_scene_id;
   ELSE
     UPDATE crop_img.raster_assets
-    SET storage_uri = p_storage_uri, status = 'ready', updated_at = now()
+    SET status = 'ready', updated_at = now()
     WHERE id = v_asset_id;
 
     UPDATE crop_img.imagery_scenes

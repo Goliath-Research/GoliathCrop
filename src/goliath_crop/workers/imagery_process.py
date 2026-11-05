@@ -57,6 +57,7 @@ def process_scene(*, scene_id: int) -> ImageryProcessResult:
 
 def register_drone_upload(
     *,
+    user_id: int,
     field_id: int,
     storage_uri: str,
     acquired_at,
@@ -66,9 +67,9 @@ def register_drone_upload(
         with conn.cursor() as cur:
             cur.execute(
                 """
-                SELECT crop_img.sp_register_drone_upload(%s, %s, %s, %s)
+                SELECT crop_img.sp_register_drone_upload(%s, %s, %s, %s, %s)
                 """,
-                (field_id, storage_uri, acquired_at, footprint_wkt),
+                (user_id, field_id, storage_uri, acquired_at, footprint_wkt),
             )
             row = cur.fetchone()
             if row is None:

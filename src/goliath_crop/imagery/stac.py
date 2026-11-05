@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-import urllib.parse
 import urllib.request
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
@@ -41,15 +40,22 @@ def search_field_scenes(
 ) -> list[StacSceneCandidate]:
     if end < start:
         return []
-    query: dict[str, str | int] = {
-        "collections": ",".join(collections),
-        "bbox": ",".join(str(v) for v in bbox),
+    body = {
+        "collections": collections,
+        "bbox": list(bbox),
         "datetime": f"{start.isoformat()}/{end.isoformat()}",
         "limit": limit,
-        "query": json.dumps({"eo:cloud_cover": {"lt": max_cloud_fraction * 100.0}}),
+        "query": {"eo:cloud_cover": {"lt": max_cloud_fraction * 100.0}},
     }
-    url = f"{EARTH_SEARCH_STAC_ROOT}/search?" + urllib.parse.urlencode(query)
-    request = urllib.request.Request(url, headers={"Accept": "application/geo+json"})
+    request = urllib.request.Request(
+        f"{EARTH_SEARCH_STAC_ROOT}/search",
+        data=json.dumps(body).encode("utf-8"),
+        headers={
+            "Accept": "application/geo+json",
+            "Content-Type": "application/json",
+        },
+        method="POST",
+    )
     with urllib.request.urlopen(request, timeout=60) as response:
         payload = json.loads(response.read().decode("utf-8"))
     features = payload.get("features") or []
@@ -64,6 +70,8 @@ def search_field_scenes(
             continue
         cloud = props.get("eo:cloud_cover")
         cloud_fraction = float(cloud) / 100.0 if cloud is not None else None
+        if cloud_fraction is not None and cloud_fraction >= max_cloud_fraction:
+            continue
         collection = str(feature.get("collection") or collections[0])
         scenes.append(
             StacSceneCandidate(

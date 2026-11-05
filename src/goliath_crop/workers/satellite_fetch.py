@@ -17,6 +17,7 @@ class SceneFetchResult:
 
 def fetch_scenes_for_field(
     *,
+    user_id: int,
     field_id: int,
     days_back: int,
     max_cloud_fraction: float,
@@ -63,10 +64,11 @@ def fetch_scenes_for_field(
                 cur.execute(
                     """
                     SELECT crop_img.sp_register_stac_scene(
-                      %s, %s, %s, %s, %s, %s::jsonb
+                      %s, %s, %s, %s, %s, %s, %s::jsonb
                     )
                     """,
                     (
+                        user_id,
                         field_id,
                         candidate.item_id,
                         source,

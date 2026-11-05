@@ -168,10 +168,11 @@ def handle_scene_fetch_and_index(
     context: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     model = SceneFetchAndIndexInput.model_validate(payload)
-    _ = context
-    if not libpq_configured():
-        return SceneFetchAndIndexOutput(scenes_registered=0, scene_ids=[]).model_dump(mode="json")
+    user_id = user_id_from_context(context)
+    if user_id is None or not libpq_configured():
+        raise RuntimeError("scene fetch requires authenticated user and database configuration")
     result = fetch_scenes_for_field(
+        user_id=user_id,
         field_id=model.field_id,
         days_back=model.days_back,
         max_cloud_fraction=model.max_cloud_fraction,
@@ -210,10 +211,11 @@ def handle_drone_upload(
     context: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     model = DroneUploadInput.model_validate(payload)
-    _ = context
-    if not libpq_configured():
-        return DroneUploadOutput(scene_id=0, task_id=None).model_dump(mode="json")
+    user_id = user_id_from_context(context)
+    if user_id is None or not libpq_configured():
+        raise RuntimeError("drone upload requires authenticated user and database configuration")
     scene_id = register_drone_upload(
+        user_id=user_id,
         field_id=model.field_id,
         storage_uri=model.storage_uri,
         acquired_at=model.acquired_at,

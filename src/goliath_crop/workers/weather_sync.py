@@ -108,6 +108,12 @@ def refresh_weather(
                             "open-meteo",
                         ),
                     )
+                    cur.execute(
+                        """
+                        SELECT crop_alerts.sp_evaluate_frost_for_field(%s, %s, %s)
+                        """,
+                        (fid, obs.obs_date, obs.tmin_c),
+                    )
                     rows_upserted += 1
             conn.commit()
     return WeatherSyncResult(fields_refreshed=fields_refreshed, rows_upserted=rows_upserted)
