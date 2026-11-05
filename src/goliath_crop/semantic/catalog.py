@@ -35,6 +35,12 @@ from goliath_crop.semantic.models import (
     SceneListParams,
     ScoutingListParams,
     IrrigationScheduleParams,
+    YieldRow,
+    YieldBySeasonParams,
+    SampleRow,
+    SampleListParams,
+    GroundstationLinkRow,
+    GroundstationListParams,
 )
 
 FARM_ENTITY = SemanticEntitySpec(
@@ -110,6 +116,13 @@ PLOT_ENTITY = SemanticEntitySpec(
         SemanticAttributeSpec("field_id", "field_id", "integer", "filter", ("eq",)),
         SemanticAttributeSpec("trial_id", "trial_id", "integer", "filter", ("eq",)),
         SemanticAttributeSpec("code", "code", "string", "label", ("eq",)),
+        SemanticAttributeSpec(
+            "omics_run_ref",
+            "omics_run_ref",
+            "string",
+            "attribute",
+            ("eq",),
+        ),
         SemanticAttributeSpec("geometry", "geometry", "string", "attribute", ()),
     ),
 )
@@ -376,6 +389,82 @@ IRRIGATION_ENTITY = SemanticEntitySpec(
     ),
 )
 
+YIELD_ENTITY = SemanticEntitySpec(
+    namespace="crop",
+    code="yield",
+    display_name="Yield",
+    description="Measured and predicted yield per planting.",
+    schema_version="1",
+    row_model=YieldRow,
+    storage_relation="crop_yield.v_yield",
+    attributes=(
+        SemanticAttributeSpec("planting_id", "planting_id", "integer", "key", ()),
+        SemanticAttributeSpec("season_id", "season_id", "integer", "filter", ("eq",)),
+        SemanticAttributeSpec("field_id", "field_id", "integer", "filter", ("eq",)),
+        SemanticAttributeSpec(
+            "measured_t_ha",
+            "measured_t_ha",
+            "number",
+            "measure",
+            ("gte", "lte"),
+        ),
+        SemanticAttributeSpec(
+            "predicted_t_ha",
+            "predicted_t_ha",
+            "number",
+            "measure",
+            ("gte", "lte"),
+        ),
+        SemanticAttributeSpec("model_version", "model_version", "string", "attribute", ()),
+        SemanticAttributeSpec("predicted_at", "predicted_at", "string", "attribute", ()),
+    ),
+)
+
+SAMPLE_ENTITY = SemanticEntitySpec(
+    namespace="crop",
+    code="sample",
+    display_name="Soil / tissue sample",
+    description="Field or plot sample with optional GoliathOmics run reference.",
+    schema_version="1",
+    row_model=SampleRow,
+    storage_relation="crop_lab.v_sample",
+    attributes=(
+        SemanticAttributeSpec("sample_id", "sample_id", "integer", "key", ()),
+        SemanticAttributeSpec("field_id", "field_id", "integer", "filter", ("eq",)),
+        SemanticAttributeSpec("plot_id", "plot_id", "integer", "filter", ("eq",)),
+        SemanticAttributeSpec("kind", "kind", "string", "filter", ("eq",)),
+        SemanticAttributeSpec("collected_on", "collected_on", "string", "attribute", ()),
+        SemanticAttributeSpec(
+            "omics_run_ref",
+            "omics_run_ref",
+            "string",
+            "attribute",
+            ("eq",),
+        ),
+    ),
+)
+
+GROUNDSTATION_ENTITY = SemanticEntitySpec(
+    namespace="crop",
+    code="groundstation_link",
+    display_name="Ground station flight link",
+    description="Registered GoliathGroundStation flight or telemetry source for a field.",
+    schema_version="1",
+    row_model=GroundstationLinkRow,
+    storage_relation="crop_link.groundstation_flights",
+    attributes=(
+        SemanticAttributeSpec("link_id", "link_id", "integer", "key", ()),
+        SemanticAttributeSpec("field_id", "field_id", "integer", "filter", ("eq",)),
+        SemanticAttributeSpec(
+            "external_flight_ref",
+            "external_flight_ref",
+            "string",
+            "label",
+            ("eq",),
+        ),
+    ),
+)
+
 SEMANTIC_CATALOG: list[SemanticEntitySpec] = [
     FARM_ENTITY,
     FIELD_ENTITY,
@@ -392,6 +481,9 @@ SEMANTIC_CATALOG: list[SemanticEntitySpec] = [
     SCENE_ENTITY,
     SCOUTING_ENTITY,
     IRRIGATION_ENTITY,
+    YIELD_ENTITY,
+    SAMPLE_ENTITY,
+    GROUNDSTATION_ENTITY,
 ]
 
 SEMANTIC_REQUESTS: list[SemanticRequestSpec] = [
@@ -562,5 +654,41 @@ SEMANTIC_REQUESTS: list[SemanticRequestSpec] = [
         result_row_model=IrrigationRow,
         required_permission="crop.irrigation.read",
         max_rows=500,
+    ),
+    SemanticRequestSpec(
+        request_code="crop.yield.by_season",
+        version="1",
+        namespace="crop",
+        entity_code="yield",
+        target_kind="function",
+        target_name="crop_yield.fn_semantic_yield_by_season",
+        params_model=YieldBySeasonParams,
+        result_row_model=YieldRow,
+        required_permission="crop.yield.read",
+        max_rows=500,
+    ),
+    SemanticRequestSpec(
+        request_code="crop.sample.list_by_field",
+        version="1",
+        namespace="crop",
+        entity_code="sample",
+        target_kind="function",
+        target_name="crop_lab.fn_semantic_sample_list_by_field",
+        params_model=SampleListParams,
+        result_row_model=SampleRow,
+        required_permission="crop.sample.read",
+        max_rows=500,
+    ),
+    SemanticRequestSpec(
+        request_code="crop.groundstation.list_by_field",
+        version="1",
+        namespace="crop",
+        entity_code="groundstation_link",
+        target_kind="function",
+        target_name="crop_link.fn_semantic_groundstation_by_field",
+        params_model=GroundstationListParams,
+        result_row_model=GroundstationLinkRow,
+        required_permission="crop.imagery.read",
+        max_rows=200,
     ),
 ]

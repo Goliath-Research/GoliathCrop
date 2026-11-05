@@ -250,6 +250,118 @@
       "schema_version": "1",
       "storage_relation": "crop_core.v_field"
     },
+    "crop.groundstation_link": {
+      "attributes": [
+        {
+          "code": "link_id",
+          "column_name": "link_id",
+          "filterable_ops": [],
+          "json_type": "integer",
+          "role": "key"
+        },
+        {
+          "code": "field_id",
+          "column_name": "field_id",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "integer",
+          "role": "filter"
+        },
+        {
+          "code": "external_flight_ref",
+          "column_name": "external_flight_ref",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "string",
+          "role": "label"
+        }
+      ],
+      "catalog_type_name": null,
+      "code": "groundstation_link",
+      "content_hash": "260aeae7b2a79d0b3d385291c4b7cf4cc12fed16253acf273b509248e391225a",
+      "description": "Registered GoliathGroundStation flight or telemetry source for a field.",
+      "display_name": "Ground station flight link",
+      "meta_class_id": null,
+      "meta_class_name": null,
+      "namespace": "crop",
+      "row_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "external_flight_ref": {
+            "title": "External Flight Ref",
+            "type": "string"
+          },
+          "field_id": {
+            "title": "Field Id",
+            "type": "integer"
+          },
+          "imagery_uri": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Imagery Uri"
+          },
+          "link_id": {
+            "title": "Link Id",
+            "type": "integer"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Notes"
+          },
+          "registered_at": {
+            "format": "date-time",
+            "title": "Registered At",
+            "type": "string"
+          },
+          "source_product": {
+            "title": "Source Product",
+            "type": "string"
+          },
+          "telemetry_uri": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Telemetry Uri"
+          }
+        },
+        "required": [
+          "link_id",
+          "field_id",
+          "external_flight_ref",
+          "source_product",
+          "registered_at"
+        ],
+        "title": "GroundstationLinkRow",
+        "type": "object"
+      },
+      "row_type": "portal.crop_groundstation_link_row",
+      "schema_id": "goliath.semantic/crop/groundstation_link/1",
+      "schema_version": "1",
+      "storage_relation": "crop_link.groundstation_flights"
+    },
     "crop.input_lot": {
       "attributes": [
         {
@@ -821,6 +933,15 @@
           "role": "label"
         },
         {
+          "code": "omics_run_ref",
+          "column_name": "omics_run_ref",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "string",
+          "role": "attribute"
+        },
+        {
           "code": "geometry",
           "column_name": "geometry",
           "filterable_ops": [],
@@ -830,7 +951,7 @@
       ],
       "catalog_type_name": null,
       "code": "plot",
-      "content_hash": "104878ae40d13784fb76b7618a6e4939a5cdefa9cbdaeb640978de0b4b47a0b8",
+      "content_hash": "35115dc1f4f3c67e3ae30c28c22a9269bce3727e62849e377f7dae5c28a142b8",
       "description": "A sub-field plot used in research trials.",
       "display_name": "Trial plot",
       "meta_class_id": null,
@@ -858,6 +979,18 @@
             ],
             "default": null,
             "title": "Geometry"
+          },
+          "omics_run_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Omics Run Ref"
           },
           "plot_id": {
             "title": "Plot Id",
@@ -982,6 +1115,210 @@
       "schema_id": "goliath.semantic/crop/reading/1",
       "schema_version": "1",
       "storage_relation": "crop_obs.sensor_readings"
+    },
+    "crop.sample": {
+      "attributes": [
+        {
+          "code": "sample_id",
+          "column_name": "sample_id",
+          "filterable_ops": [],
+          "json_type": "integer",
+          "role": "key"
+        },
+        {
+          "code": "field_id",
+          "column_name": "field_id",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "integer",
+          "role": "filter"
+        },
+        {
+          "code": "plot_id",
+          "column_name": "plot_id",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "integer",
+          "role": "filter"
+        },
+        {
+          "code": "kind",
+          "column_name": "kind",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "string",
+          "role": "filter"
+        },
+        {
+          "code": "collected_on",
+          "column_name": "collected_on",
+          "filterable_ops": [],
+          "json_type": "string",
+          "role": "attribute"
+        },
+        {
+          "code": "omics_run_ref",
+          "column_name": "omics_run_ref",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "string",
+          "role": "attribute"
+        }
+      ],
+      "catalog_type_name": null,
+      "code": "sample",
+      "content_hash": "9f002bf09935df66af59d1e4202e0d80962ee4d832230143f33ed93816fb88ec",
+      "description": "Field or plot sample with optional GoliathOmics run reference.",
+      "display_name": "Soil / tissue sample",
+      "meta_class_id": null,
+      "meta_class_name": null,
+      "namespace": "crop",
+      "row_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "collected_on": {
+            "format": "date",
+            "title": "Collected On",
+            "type": "string"
+          },
+          "depth_cm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Depth Cm"
+          },
+          "field_id": {
+            "title": "Field Id",
+            "type": "integer"
+          },
+          "geo_json": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Geo Json"
+          },
+          "k_ppm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "K Ppm"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "n_ppm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "N Ppm"
+          },
+          "om_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Om Pct"
+          },
+          "omics_run_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Omics Run Ref"
+          },
+          "p_ppm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "P Ppm"
+          },
+          "ph": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Ph"
+          },
+          "plot_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Plot Id"
+          },
+          "sample_id": {
+            "title": "Sample Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "sample_id",
+          "field_id",
+          "kind",
+          "collected_on"
+        ],
+        "title": "SampleRow",
+        "type": "object"
+      },
+      "row_type": "portal.crop_sample_row",
+      "schema_id": "goliath.semantic/crop/sample/1",
+      "schema_version": "1",
+      "storage_relation": "crop_lab.v_sample"
     },
     "crop.scene": {
       "attributes": [
@@ -1867,6 +2204,154 @@
       "schema_id": "goliath.semantic/crop/weather/1",
       "schema_version": "1",
       "storage_relation": "crop_obs.v_weather_daily"
+    },
+    "crop.yield": {
+      "attributes": [
+        {
+          "code": "planting_id",
+          "column_name": "planting_id",
+          "filterable_ops": [],
+          "json_type": "integer",
+          "role": "key"
+        },
+        {
+          "code": "season_id",
+          "column_name": "season_id",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "integer",
+          "role": "filter"
+        },
+        {
+          "code": "field_id",
+          "column_name": "field_id",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "integer",
+          "role": "filter"
+        },
+        {
+          "code": "measured_t_ha",
+          "column_name": "measured_t_ha",
+          "filterable_ops": [
+            "gte",
+            "lte"
+          ],
+          "json_type": "number",
+          "role": "measure"
+        },
+        {
+          "code": "predicted_t_ha",
+          "column_name": "predicted_t_ha",
+          "filterable_ops": [
+            "gte",
+            "lte"
+          ],
+          "json_type": "number",
+          "role": "measure"
+        },
+        {
+          "code": "model_version",
+          "column_name": "model_version",
+          "filterable_ops": [],
+          "json_type": "string",
+          "role": "attribute"
+        },
+        {
+          "code": "predicted_at",
+          "column_name": "predicted_at",
+          "filterable_ops": [],
+          "json_type": "string",
+          "role": "attribute"
+        }
+      ],
+      "catalog_type_name": null,
+      "code": "yield",
+      "content_hash": "b444a942dc1c85badac9a2d382f7fa759036bf4fd96cf99ed26998a8ff55b552",
+      "description": "Measured and predicted yield per planting.",
+      "display_name": "Yield",
+      "meta_class_id": null,
+      "meta_class_name": null,
+      "namespace": "crop",
+      "row_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "field_id": {
+            "title": "Field Id",
+            "type": "integer"
+          },
+          "measured_t_ha": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Measured T Ha"
+          },
+          "model_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Model Version"
+          },
+          "planting_id": {
+            "title": "Planting Id",
+            "type": "integer"
+          },
+          "predicted_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Predicted At"
+          },
+          "predicted_t_ha": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Predicted T Ha"
+          },
+          "season_id": {
+            "title": "Season Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "planting_id",
+          "season_id",
+          "field_id"
+        ],
+        "title": "YieldRow",
+        "type": "object"
+      },
+      "row_type": "portal.crop_yield_row",
+      "schema_id": "goliath.semantic/crop/yield/1",
+      "schema_version": "1",
+      "storage_relation": "crop_yield.v_yield"
     }
   },
   "requests": {
@@ -2063,6 +2548,106 @@
       "schema_id": "goliath.semantic/crop/crop.field.list_by_farm/1",
       "target_kind": "function",
       "target_name": "crop_core.fn_semantic_field_list_by_farm",
+      "version": "1"
+    },
+    "crop.groundstation.list_by_field": {
+      "base_namespace": null,
+      "content_hash": "3d23d21d738aa6348d28aac82556625978d60596c4bfd270368cb5af556e32d4",
+      "entity_code": "groundstation_link",
+      "filter_template": null,
+      "max_rows": 200,
+      "namespace": "crop",
+      "params_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "field_id": {
+            "title": "Field Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "field_id"
+        ],
+        "title": "GroundstationListParams",
+        "type": "object"
+      },
+      "request_code": "crop.groundstation.list_by_field",
+      "required_permission": "crop.imagery.read",
+      "result_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "external_flight_ref": {
+            "title": "External Flight Ref",
+            "type": "string"
+          },
+          "field_id": {
+            "title": "Field Id",
+            "type": "integer"
+          },
+          "imagery_uri": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Imagery Uri"
+          },
+          "link_id": {
+            "title": "Link Id",
+            "type": "integer"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Notes"
+          },
+          "registered_at": {
+            "format": "date-time",
+            "title": "Registered At",
+            "type": "string"
+          },
+          "source_product": {
+            "title": "Source Product",
+            "type": "string"
+          },
+          "telemetry_uri": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Telemetry Uri"
+          }
+        },
+        "required": [
+          "link_id",
+          "field_id",
+          "external_flight_ref",
+          "source_product",
+          "registered_at"
+        ],
+        "title": "GroundstationLinkRow",
+        "type": "object"
+      },
+      "row_type": "portal.crop_groundstation_link_row",
+      "schema_id": "goliath.semantic/crop/crop.groundstation.list_by_field/1",
+      "target_kind": "function",
+      "target_name": "crop_link.fn_semantic_groundstation_by_field",
       "version": "1"
     },
     "crop.input_lot.list_by_farm": {
@@ -2644,6 +3229,211 @@
       "schema_id": "goliath.semantic/crop/crop.reading.window/1",
       "target_kind": "function",
       "target_name": "crop_obs.fn_readings_window",
+      "version": "1"
+    },
+    "crop.sample.list_by_field": {
+      "base_namespace": null,
+      "content_hash": "b48e98aff884f7e511b9ddd5a5df46022f8e2b52acba596b88090d3ac64847c3",
+      "entity_code": "sample",
+      "filter_template": null,
+      "max_rows": 500,
+      "namespace": "crop",
+      "params_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "field_id": {
+            "title": "Field Id",
+            "type": "integer"
+          },
+          "from": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "From"
+          },
+          "kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Kind"
+          },
+          "to": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "To"
+          }
+        },
+        "required": [
+          "field_id"
+        ],
+        "title": "SampleListParams",
+        "type": "object"
+      },
+      "request_code": "crop.sample.list_by_field",
+      "required_permission": "crop.sample.read",
+      "result_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "collected_on": {
+            "format": "date",
+            "title": "Collected On",
+            "type": "string"
+          },
+          "depth_cm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Depth Cm"
+          },
+          "field_id": {
+            "title": "Field Id",
+            "type": "integer"
+          },
+          "geo_json": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Geo Json"
+          },
+          "k_ppm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "K Ppm"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "n_ppm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "N Ppm"
+          },
+          "om_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Om Pct"
+          },
+          "omics_run_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Omics Run Ref"
+          },
+          "p_ppm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "P Ppm"
+          },
+          "ph": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Ph"
+          },
+          "plot_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Plot Id"
+          },
+          "sample_id": {
+            "title": "Sample Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "sample_id",
+          "field_id",
+          "kind",
+          "collected_on"
+        ],
+        "title": "SampleRow",
+        "type": "object"
+      },
+      "row_type": "portal.crop_sample_row",
+      "schema_id": "goliath.semantic/crop/crop.sample.list_by_field/1",
+      "target_kind": "function",
+      "target_name": "crop_lab.fn_semantic_sample_list_by_field",
       "version": "1"
     },
     "crop.scene.list_by_field": {
@@ -3382,6 +4172,108 @@
       "schema_id": "goliath.semantic/crop/crop.weather.daily/1",
       "target_kind": "function",
       "target_name": "crop_obs.fn_semantic_weather_daily",
+      "version": "1"
+    },
+    "crop.yield.by_season": {
+      "base_namespace": null,
+      "content_hash": "3646986fc5d80e15d15cda0628d2c459357a18b9e7e1a96c5135ce1fcfa3bcf1",
+      "entity_code": "yield",
+      "filter_template": null,
+      "max_rows": 500,
+      "namespace": "crop",
+      "params_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "season_id": {
+            "title": "Season Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "season_id"
+        ],
+        "title": "YieldBySeasonParams",
+        "type": "object"
+      },
+      "request_code": "crop.yield.by_season",
+      "required_permission": "crop.yield.read",
+      "result_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "field_id": {
+            "title": "Field Id",
+            "type": "integer"
+          },
+          "measured_t_ha": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Measured T Ha"
+          },
+          "model_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Model Version"
+          },
+          "planting_id": {
+            "title": "Planting Id",
+            "type": "integer"
+          },
+          "predicted_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Predicted At"
+          },
+          "predicted_t_ha": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Predicted T Ha"
+          },
+          "season_id": {
+            "title": "Season Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "planting_id",
+          "season_id",
+          "field_id"
+        ],
+        "title": "YieldRow",
+        "type": "object"
+      },
+      "row_type": "portal.crop_yield_row",
+      "schema_id": "goliath.semantic/crop/crop.yield.by_season/1",
+      "target_kind": "function",
+      "target_name": "crop_yield.fn_semantic_yield_by_season",
       "version": "1"
     }
   }

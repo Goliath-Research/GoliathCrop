@@ -30,6 +30,7 @@ NAV_SPEC = (
     ("Scouting", "Crop", 42, "crop_scouting", "crop.scouting.list_by_field"),
     ("Field entry", "Crop", 45, "crop_field_entry", "crop.field.entry"),
     ("Trials", "Crop", 40, "crop_trials", "crop.trial.list_by_season"),
+    ("Yield", "Crop", 43, "crop_yield", "crop.yield.by_season"),
 )
 
 

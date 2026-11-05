@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Crop · Yield</title>
+    <link rel="stylesheet" href="../static/crop-shell.css" />
+  </head>
+  <body>
+    <h1>Yield &amp; forecast</h1>
+    <p class="crop-muted">Measured harvest vs CPU baseline predictions (RunPod GPU when workers are configured).</p>
+    <div class="crop-toolbar">
+      <label>
+        Season ID
+        <input id="seasonId" type="number" value="1" />
+      </label>
+      <button type="button" id="predictBtn">Run predict</button>
+    </div>
+    <ul class="crop-list" id="yieldList"></ul>
+    <p class="crop-status" id="status"></p>
+    <script src="../static/crop-api.js"></script>
+    <script>
+      const status = document.getElementById("status");
+      const list = document.getElementById("yieldList");
+      const seasonInput = document.getElementById("seasonId");
+      const predictBtn = document.getElementById("predictBtn");
+
+      async function refresh() {
+        const seasonId = Number(seasonInput.value);
+        const rows = await CropPortal.runSemanticRequest("crop.yield.by_season", {
+          season_id: seasonId,
+        });
+        if (!rows.length) {
+          list.innerHTML = "<li>No yield rows yet — run predict or import monitor data.</li>";
+          return;
+        }
+        list.innerHTML = rows
+          .map((row) => {
+            const measured =
+              row.measured_t_ha != null ? `${Number(row.measured_t_ha).toFixed(2)} t/ha measured` : "No measurement";
+            const predicted =
+              row.predicted_t_ha != null
+                ? `<strong>${Number(row.predicted_t_ha).toFixed(2)} t/ha forecast</strong>`
+                : "No forecast";
+            return `<li>Planting ${row.planting_id} · field ${row.field_id}<div>${predicted} · ${measured}</div><div class="crop-muted">${row.model_version || ""}</div></li>`;
+          })
+          .join("");
+      }
+
+      predictBtn.addEventListener("click", async () => {
+        const seasonId = Number(seasonInput.value);
+        await CropPortal.runAction("crop.yield.predict", { season_id: seasonId });
+        CropPortal.setStatus(status, "Prediction run queued or completed.");
+        await refresh();
+      });
+
+      seasonInput.addEventListener("change", () => refresh().catch((e) => CropPortal.setStatus(status, e.message, true)));
+      refresh().catch((err) => CropPortal.setStatus(status, err.message, true));
+    </script>
+  </body>
+</html>

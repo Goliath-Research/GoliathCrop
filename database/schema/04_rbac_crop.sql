@@ -11,6 +11,8 @@
 --   crop.imagery.read, crop.imagery.write
 --   crop.scouting.read, crop.scouting.write
 --   crop.irrigation.read
+--   crop.yield.read, crop.yield.write
+--   crop.sample.read, crop.sample.write
 -- Planned crop roles (owner, agronomist, operator, viewer, researcher) and Role2Node
 -- grants are applied per organization scope after roles exist — see docs/plan.md NavTree.
 

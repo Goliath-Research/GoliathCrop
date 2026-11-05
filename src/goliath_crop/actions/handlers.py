@@ -30,14 +30,24 @@ from goliath_crop.actions.models import (
     ScoutingRecordOutput,
     IrrigationScheduleInput,
     IrrigationScheduleOutput,
+    YieldPredictInput,
+    YieldPredictOutput,
+    LinkOmicsInput,
+    LinkOmicsOutput,
+    RegisterGroundstationInput,
+    RegisterGroundstationOutput,
+    MachineImportInput,
+    MachineImportOutput,
 )
 from goliath_crop.db import connect, libpq_configured, user_id_from_context
+from goliath_crop.ingest.machine_data import import_machine_file
 from goliath_crop.workers.alerts import evaluate_alert
 from goliath_crop.workers.imagery_process import process_scene, register_drone_upload
 from goliath_crop.workers.irrigation_schedule import run_irrigation_schedule
 from goliath_crop.workers.satellite_fetch import fetch_scenes_for_field
 from goliath_crop.workers.sensor_ingest import ingest_sensor_batch, run_sensor_qc
 from goliath_crop.workers.weather_sync import refresh_weather
+from goliath_crop.workers.yield_predict import run_yield_predict_for_season
 
 
 def handle_field_import_boundaries(
@@ -302,4 +312,106 @@ def handle_irrigation_schedule(
         balance_date=result.balance_date,
         recommended_irrigation_mm=result.recommended_irrigation_mm,
         depletion_mm=result.depletion_mm,
+    ).model_dump(mode="json")
+
+
+def handle_yield_predict(
+    payload: dict[str, Any],
+    *,
+    context: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    model = YieldPredictInput.model_validate(payload)
+    _ = context
+    if not libpq_configured():
+        return YieldPredictOutput(
+            season_id=model.season_id,
+            planting_count=0,
+            predictions_written=0,
+            model_backend="cpu",
+        ).model_dump(mode="json")
+    result = run_yield_predict_for_season(season_id=model.season_id)
+    return YieldPredictOutput(
+        season_id=result.season_id,
+        planting_count=result.planting_count,
+        predictions_written=result.predictions_written,
+        model_backend=result.model_backend,
+    ).model_dump(mode="json")
+
+
+def handle_link_omics(
+    payload: dict[str, Any],
+    *,
+    context: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    model = LinkOmicsInput.model_validate(payload)
+    user_id = user_id_from_context(context)
+    if model.sample_id is None and model.plot_id is None:
+        raise ValueError("sample_id or plot_id is required")
+    if user_id is None or not libpq_configured():
+        return LinkOmicsOutput(linked=False).model_dump(mode="json")
+    with connect() as conn:
+        with conn.cursor() as cur:
+            if model.sample_id is not None:
+                cur.execute(
+                    "SELECT crop_lab.sp_link_omics_run(%s, %s, %s)",
+                    (user_id, model.sample_id, model.omics_run_ref),
+                )
+            if model.plot_id is not None:
+                cur.execute(
+                    "SELECT crop_core.sp_link_plot_omics_run(%s, %s, %s)",
+                    (user_id, model.plot_id, model.omics_run_ref),
+                )
+        conn.commit()
+    return LinkOmicsOutput(linked=True).model_dump(mode="json")
+
+
+def handle_register_groundstation(
+    payload: dict[str, Any],
+    *,
+    context: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    model = RegisterGroundstationInput.model_validate(payload)
+    user_id = user_id_from_context(context)
+    if user_id is None or not libpq_configured():
+        return RegisterGroundstationOutput(link_id=0).model_dump(mode="json")
+    with connect() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT crop_link.sp_register_groundstation_flight(
+                  %s, %s, %s, %s, %s, %s
+                )
+                """,
+                (
+                    user_id,
+                    model.field_id,
+                    model.external_flight_ref,
+                    model.telemetry_uri,
+                    model.imagery_uri,
+                    model.notes,
+                ),
+            )
+            row = cur.fetchone()
+        conn.commit()
+    link_id = int(row[0]) if row else 0
+    return RegisterGroundstationOutput(link_id=link_id).model_dump(mode="json")
+
+
+def handle_machine_import(
+    payload: dict[str, Any],
+    *,
+    context: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    model = MachineImportInput.model_validate(payload)
+    _ = context
+    fmt = model.format.strip().lower()
+    if fmt not in ("adapt", "isobus", "yield_monitor"):
+        raise ValueError("format must be adapt, isobus, or yield_monitor")
+    result = import_machine_file(format=fmt, payload=model.payload)  # type: ignore[arg-type]
+    return MachineImportOutput(
+        format=result.format,
+        rows_parsed=result.rows_parsed,
+        rows_applied=result.rows_applied,
+        incomplete_edges=list(result.incomplete_edges),
+        notes=result.notes,
     ).model_dump(mode="json")

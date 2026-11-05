@@ -15,6 +15,8 @@
     "crop.scouting.list_by_field": { "view": "views/scouting.html", "title": "Scouting" },
     "crop.field.entry": { "view": "views/field-entry.html", "title": "Field entry" },
     "crop.trial.list_by_season": { "view": "views/trials.html", "title": "Trials" },
-    "crop.trial.results": { "view": "views/trial-results.html", "title": "Trial results" }
+    "crop.trial.results": { "view": "views/trial-results.html", "title": "Trial results" },
+    "crop.yield.by_season": { "view": "views/yield.html", "title": "Yield" },
+    "crop.sample.list_by_field": { "view": "views/samples.html", "title": "Soil & tissue samples" }
   }
 }

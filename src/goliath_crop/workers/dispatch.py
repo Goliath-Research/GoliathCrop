@@ -10,6 +10,7 @@ from goliath_crop.actions.handlers import (
     handle_drone_upload,
     handle_imagery_process,
     handle_irrigation_schedule,
+    handle_yield_predict,
     handle_scene_fetch_and_index,
     handle_scouting_record,
     handle_sensor_ingest_batch,
@@ -28,6 +29,7 @@ ACTION_CAPABILITY: Final[dict[str, str]] = {
     "crop.drone.upload": "crop.imagery",
     "crop.alert.evaluate": "crop.alerts",
     "crop.irrigation.schedule": "crop.irrigation",
+    "crop.yield.predict": "crop.model",
 }
 
 _ACTION_HANDLERS: Final[dict[str, HandlerFn]] = {
@@ -46,6 +48,7 @@ _ACTION_HANDLERS: Final[dict[str, HandlerFn]] = {
     "crop.irrigation.schedule": lambda payload, ctx=None: handle_irrigation_schedule(
         payload, context=ctx
     ),
+    "crop.yield.predict": lambda payload, ctx=None: handle_yield_predict(payload, context=ctx),
 }
 
 

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Crop · Samples</title>
+    <link rel="stylesheet" href="../static/crop-shell.css" />
+  </head>
+  <body>
+    <h1>Soil &amp; tissue samples</h1>
+    <p class="crop-muted">Lab results and optional <code>omics_run_ref</code> links to GoliathOmics.</p>
+    <div class="crop-toolbar">
+      <label>
+        Field ID
+        <input id="fieldId" type="number" value="10" />
+      </label>
+    </div>
+    <ul class="crop-list" id="sampleList"></ul>
+    <p class="crop-status" id="status"></p>
+    <script src="../static/crop-api.js"></script>
+    <script>
+      const status = document.getElementById("status");
+      const list = document.getElementById("sampleList");
+      const fieldInput = document.getElementById("fieldId");
+
+      async function refresh() {
+        const fieldId = Number(fieldInput.value);
+        const rows = await CropPortal.runSemanticRequest("crop.sample.list_by_field", { field_id: fieldId });
+        if (!rows.length) {
+          list.innerHTML = "<li>No samples recorded for this field.</li>";
+          return;
+        }
+        list.innerHTML = rows
+          .map((row) => {
+            const omics = row.omics_run_ref
+              ? `<div class="crop-muted">Omics: ${row.omics_run_ref}</div>`
+              : "";
+            return `<li>${row.kind} · ${row.collected_on} · sample ${row.sample_id}${omics}</li>`;
+          })
+          .join("");
+      }
+
+      fieldInput.addEventListener("change", () => refresh().catch((e) => CropPortal.setStatus(status, e.message, true)));
+      refresh().catch((err) => CropPortal.setStatus(status, err.message, true));
+    </script>
+  </body>
+</html>

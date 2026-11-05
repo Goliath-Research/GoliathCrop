@@ -12,6 +12,7 @@ def test_known_worker_actions() -> None:
     assert "crop.weather.refresh" in names
     assert "crop.sensor.qc" in names
     assert "crop.imagery.process" in names
+    assert "crop.yield.predict" in names
 
 
 def test_sensor_qc_without_db() -> None:
@@ -30,6 +31,13 @@ def test_capability_mapping() -> None:
     assert capability_for_action("crop.sensor.ingest_batch") == "crop.ingest"
     assert capability_for_action("crop.alert.evaluate") == "crop.alerts"
     assert capability_for_action("crop.irrigation.schedule") == "crop.irrigation"
+    assert capability_for_action("crop.yield.predict") == "crop.model"
+
+
+def test_yield_predict_without_db() -> None:
+    out = handle("crop.yield.predict", {"season_id": 2})
+    assert out["season_id"] == 2
+    assert out["model_backend"] == "cpu"
 
 
 def test_dispatch_unknown_action_raises() -> None:

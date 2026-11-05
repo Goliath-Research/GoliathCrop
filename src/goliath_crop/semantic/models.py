@@ -37,6 +37,7 @@ class PlotRow(BaseModel):
     field_id: int
     trial_id: Optional[int] = None
     code: str
+    omics_run_ref: Optional[str] = None
     geometry: Optional[str] = None
 
 
@@ -291,3 +292,67 @@ class IrrigationScheduleParams(BaseModel):
     field_id: int
     from_: Optional[date] = Field(default=None, alias="from")
     to: Optional[date] = None
+
+
+class YieldRow(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    planting_id: int
+    season_id: int
+    field_id: int
+    measured_t_ha: Optional[float] = None
+    predicted_t_ha: Optional[float] = None
+    model_version: Optional[str] = None
+    predicted_at: Optional[datetime] = None
+
+
+class YieldBySeasonParams(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    season_id: int
+
+
+class SampleRow(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    sample_id: int
+    field_id: int
+    plot_id: Optional[int] = None
+    kind: str
+    collected_on: date
+    depth_cm: Optional[float] = None
+    geo_json: Optional[str] = None
+    omics_run_ref: Optional[str] = None
+    n_ppm: Optional[float] = None
+    p_ppm: Optional[float] = None
+    k_ppm: Optional[float] = None
+    ph: Optional[float] = None
+    om_pct: Optional[float] = None
+
+
+class SampleListParams(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    field_id: int
+    kind: Optional[str] = None
+    from_: Optional[date] = Field(default=None, alias="from")
+    to: Optional[date] = None
+
+
+class GroundstationLinkRow(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    link_id: int
+    field_id: int
+    external_flight_ref: str
+    telemetry_uri: Optional[str] = None
+    imagery_uri: Optional[str] = None
+    source_product: str
+    registered_at: datetime
+    notes: Optional[str] = None
+
+
+class GroundstationListParams(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    field_id: int

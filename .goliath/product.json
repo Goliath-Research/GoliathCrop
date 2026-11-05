@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "id": "goliathcrop",
   "name": "GoliathCrop",
-  "tagline": "Crop management on GoliathApp: fields, operations, sensors, imagery, and research trials.",
-  "description": "GoliathCrop specializes GoliathApp for commercial farms and research stations. Phase 4 adds FAO-56 irrigation scheduling, scouting observations, and phone-usable field entry forms. Phase 3 sensing adds sensor hypertables with dual-activation wakes, Element84 STAC imagery, drone COG processing, and threshold alerts.",
+  "tagline": "Crop management on GoliathApp: fields, operations, sensors, imagery, trials, and yield.",
+  "description": "GoliathCrop specializes GoliathApp for commercial farms and research stations. Phase 5 completes the planned roadmap with CPU baseline yield prediction (RunPod-ready workers), GoliathOmics/GroundStation integration hooks, and ISOBUS/ADAPT import stubs. Earlier phases deliver PostGIS core data, sensing, irrigation, scouting, and portal domain views.",
   "category": "application",
   "features": [
     {
@@ -15,25 +15,21 @@
       "description": "TimescaleDB sensor readings, free weather providers (Open-Meteo, NOAA), and Sentinel-2/Landsat NDVI stored as COGs."
     },
     {
-      "title": "Research trials in the MVP",
-      "description": "Plots, treatments, replicates, and observations for research stations alongside commercial farm records."
-    },
-    {
-      "title": "Irrigation and scouting",
-      "description": "FAO-56 irrigation recommendations from weather and soil moisture, scouting pins with severity and photos, and phone-friendly field entry forms."
+      "title": "Yield forecast and ecosystem links",
+      "description": "Season yield reads, CPU baseline predictions, optional RunPod GPU workers, omics and ground-station registration actions."
     },
     {
       "title": "DomainPrograms with dual activation",
-      "description": "Backlog work is claimed through goliath-gateway; event-triggered work (weather, moisture, imagery, thresholds) wakes workers via Postgres pub/sub."
+      "description": "Backlog work is claimed through goliath-gateway; event-triggered work wakes workers via Postgres pub/sub."
     }
   ],
   "links": {
     "repository": "https://github.com/Goliath-Research/GoliathCrop",
-    "docs": null,
+    "docs": "https://github.com/Goliath-Research/GoliathCrop/blob/main/docs/plan.md",
     "website": null
   },
-  "related": ["goliathapp"],
+  "related": ["goliathapp", "goliathomics", "goliathgroundstation"],
   "dependsOn": ["goliathapp"],
   "license": "MIT",
-  "status": "in_development"
+  "status": "stable"
 }
