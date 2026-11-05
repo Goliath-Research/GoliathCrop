@@ -2,14 +2,35 @@
 
 GoliathApp specialization for crop management: farms, fields and plots, operations, inputs, sensors, weather, satellite and drone imagery, and research trials. Initial targets are a commercial farm and a research station.
 
-Status: **planned**. This repository currently holds the catalog entry and the plan.
+Status: **in development** — Phase 1 (core data) lands the Python package, PostGIS schemas (`crop_core`, `crop_ops`, `crop_trial`), semantic registry, ActionSpec catalog, and NavTree seeder.
 
 ## Layout
 
 | Path | Purpose |
 | --- | --- |
-| [`docs/plan.md`](docs/plan.md) | Full plan: domain model, ingestion, DomainPrograms, schema, RBAC, UI, roadmap, decisions |
+| [`docs/plan.md`](docs/plan.md) | Full plan: domain model, ingestion, DomainPrograms, schema, RBAC, UI, roadmap |
+| [`docs/semantic-layer.md`](docs/semantic-layer.md) | Semantic namespace `crop`, export/seed, Phase 1 requests |
+| [`src/goliath_crop/`](src/goliath_crop/) | Python package (semantic specs, actions, seed helpers) |
+| [`database/schema/`](database/schema/) | Ordered SQL apply scripts (PostGIS + views + semantic functions) |
+| [`scripts/apply_domain_schema.sh`](scripts/apply_domain_schema.sh) | Idempotent domain DDL apply (after GoliathApp platform schema) |
 | [`.goliath/product.json`](.goliath/product.json) | GoliathWeb catalog entry |
+
+## Quick start (developers)
+
+```bash
+python -m pip install -e ".[dev]"
+goliath-crop-semantic-export --catalog schemas/semantic/catalog.json \
+  -o database/schema/portal_semantic_row_types.sql
+pytest -q
+```
+
+After GoliathApp platform schema is on a database:
+
+```bash
+export PGHOST=... PGDATABASE=... PGUSER=... PGPASSWORD=...
+./scripts/apply_domain_schema.sh
+goliath-crop-seed-semantic
+```
 
 ## Architecture
 
@@ -29,7 +50,7 @@ flowchart LR
   A[GoliathApp<br/>auth, RBAC.Sessions, portal, workers] -.inherited by.-> P
 ```
 
-GoliathCrop inherits GoliathApp auth (`RBAC.Sessions`), the portal, the semantic registry (named requests + Exograph GraphQL/MCP) as the read API, typed `ActionSpec` actions, and workers that claim tasks through goliath-gateway, with Postgres pub/sub waking workers for event-triggered tasks. Geometry is PostGIS, readings are TimescaleDB, and rasters are COGs on S3-compatible storage.
+GoliathCrop inherits GoliathApp auth (`RBAC.Sessions`), the portal, the semantic registry (named requests + Exograph GraphQL/MCP) as the read API, typed `ActionSpec` actions, and workers that claim tasks through goliath-gateway, with Postgres pub/sub waking workers for event-triggered tasks. Geometry is PostGIS; TimescaleDB hypertables for readings are Phase 3; rasters are COGs on S3-compatible storage.
 
 See the [plan](docs/plan.md) for details.
 

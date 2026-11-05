@@ -1,6 +1,6 @@
 # GoliathCrop — Crop Management plan
 
-Status: planned. GoliathCrop is a GoliathApp child application. GoliathApp knows nothing about GoliathCrop.
+Status: in development (Phase 1 core data landed in repo).
 
 ## Vision and users
 

@@ -1,0 +1,198 @@
+{
+  "actions": {
+    "crop.field.import_boundaries": {
+      "base_namespace": null,
+      "capability": "crop.ingest",
+      "description": "Import or replace field polygons from GeoJSON or shapefile upload.",
+      "display_name": "Import field boundaries",
+      "entity_code": "field",
+      "exposure": "rbac",
+      "level": "domain",
+      "namespace": "crop",
+      "required_permission": "crop.field.write",
+      "schema_version": "1",
+      "schemas": {
+        "input": {
+          "content_hash": "1b969036b1095ef5bcc149de19f98cbc44d7a76b643eea716756ce20ca29abaa",
+          "schema_id": "goliath.actions/crop/crop.field.import_boundaries/input/1",
+          "schema_json": {
+            "additionalProperties": false,
+            "properties": {
+              "farm_id": {
+                "title": "Farm Id",
+                "type": "integer"
+              },
+              "geojson": {
+                "description": "GeoJSON FeatureCollection of field polygons",
+                "title": "Geojson",
+                "type": "string"
+              },
+              "replace_existing": {
+                "default": false,
+                "title": "Replace Existing",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "farm_id",
+              "geojson"
+            ],
+            "title": "FieldImportBoundariesInput",
+            "type": "object"
+          },
+          "schema_version": "1"
+        },
+        "output": {
+          "content_hash": "0930bd0b161fc39fa3add61fb1c8f0c970bc133ccfa6a8ca2feb721e35a98b8f",
+          "schema_id": "goliath.actions/crop/crop.field.import_boundaries/output/1",
+          "schema_json": {
+            "additionalProperties": false,
+            "properties": {
+              "field_ids": {
+                "items": {
+                  "type": "integer"
+                },
+                "title": "Field Ids",
+                "type": "array"
+              },
+              "imported_count": {
+                "title": "Imported Count",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "imported_count",
+              "field_ids"
+            ],
+            "title": "FieldImportBoundariesOutput",
+            "type": "object"
+          },
+          "schema_version": "1"
+        }
+      }
+    },
+    "crop.operation.record": {
+      "base_namespace": null,
+      "capability": "crop.ops",
+      "description": "Log irrigation, fertilization, spraying, harvest, or other field work.",
+      "display_name": "Record field operation",
+      "entity_code": "operation",
+      "exposure": "rbac",
+      "level": "domain",
+      "namespace": "crop",
+      "required_permission": "crop.operation.write",
+      "schema_version": "1",
+      "schemas": {
+        "input": {
+          "content_hash": "bbee62e8e5225e2346653581d9c51e560622c9f1301ddb698f2691c0bcc2663c",
+          "schema_id": "goliath.actions/crop/crop.operation.record/input/1",
+          "schema_json": {
+            "additionalProperties": false,
+            "properties": {
+              "equipment": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Equipment"
+              },
+              "kind": {
+                "title": "Kind",
+                "type": "string"
+              },
+              "notes": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Notes"
+              },
+              "operator": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Operator"
+              },
+              "performed_on": {
+                "format": "date-time",
+                "title": "Performed On",
+                "type": "string"
+              },
+              "planting_id": {
+                "title": "Planting Id",
+                "type": "integer"
+              },
+              "rate": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Rate"
+              },
+              "rate_unit": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Rate Unit"
+              }
+            },
+            "required": [
+              "planting_id",
+              "kind",
+              "performed_on"
+            ],
+            "title": "OperationRecordInput",
+            "type": "object"
+          },
+          "schema_version": "1"
+        },
+        "output": {
+          "content_hash": "0271f233c6a8a78efe07fe8b33fa0560244b445a4b568ba807b65f243cc401dd",
+          "schema_id": "goliath.actions/crop/crop.operation.record/output/1",
+          "schema_json": {
+            "additionalProperties": false,
+            "properties": {
+              "operation_id": {
+                "title": "Operation Id",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "operation_id"
+            ],
+            "title": "OperationRecordOutput",
+            "type": "object"
+          },
+          "schema_version": "1"
+        }
+      }
+    }
+  }
+}

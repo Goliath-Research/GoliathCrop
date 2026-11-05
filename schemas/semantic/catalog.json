@@ -1,0 +1,1533 @@
+{
+  "entities": {
+    "crop.farm": {
+      "attributes": [
+        {
+          "code": "farm_id",
+          "column_name": "id",
+          "filterable_ops": [],
+          "json_type": "integer",
+          "role": "key"
+        },
+        {
+          "code": "organization_id",
+          "column_name": "organization_id",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "integer",
+          "role": "filter"
+        },
+        {
+          "code": "name",
+          "column_name": "name",
+          "filterable_ops": [
+            "ilike"
+          ],
+          "json_type": "string",
+          "role": "label"
+        },
+        {
+          "code": "location",
+          "column_name": "location",
+          "filterable_ops": [],
+          "json_type": "string",
+          "role": "attribute"
+        },
+        {
+          "code": "timezone",
+          "column_name": "timezone",
+          "filterable_ops": [],
+          "json_type": "string",
+          "role": "attribute"
+        },
+        {
+          "code": "units",
+          "column_name": "units",
+          "filterable_ops": [],
+          "json_type": "string",
+          "role": "attribute"
+        }
+      ],
+      "catalog_type_name": null,
+      "code": "farm",
+      "content_hash": "84e067b8903a301ba9c007e7d74c126150c3fac9436a55ce1360cb4ed0bae4c4",
+      "description": "A farm belonging to a GoliathApp organization.",
+      "display_name": "Farm",
+      "meta_class_id": null,
+      "meta_class_name": null,
+      "namespace": "crop",
+      "row_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "farm_id": {
+            "title": "Farm Id",
+            "type": "integer"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Location"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "organization_id": {
+            "title": "Organization Id",
+            "type": "integer"
+          },
+          "timezone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Timezone"
+          },
+          "units": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Units"
+          }
+        },
+        "required": [
+          "farm_id",
+          "organization_id",
+          "name"
+        ],
+        "title": "FarmRow",
+        "type": "object"
+      },
+      "row_type": "portal.crop_farm_row",
+      "schema_id": "goliath.semantic/crop/farm/1",
+      "schema_version": "1",
+      "storage_relation": "crop_core.v_farm"
+    },
+    "crop.field": {
+      "attributes": [
+        {
+          "code": "field_id",
+          "column_name": "id",
+          "filterable_ops": [],
+          "json_type": "integer",
+          "role": "key"
+        },
+        {
+          "code": "farm_id",
+          "column_name": "farm_id",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "integer",
+          "role": "filter"
+        },
+        {
+          "code": "name",
+          "column_name": "name",
+          "filterable_ops": [
+            "ilike"
+          ],
+          "json_type": "string",
+          "role": "label"
+        },
+        {
+          "code": "area_ha",
+          "column_name": "area_ha",
+          "filterable_ops": [
+            "gte",
+            "lte"
+          ],
+          "json_type": "number",
+          "role": "measure"
+        },
+        {
+          "code": "soil_type",
+          "column_name": "soil_type",
+          "filterable_ops": [
+            "eq",
+            "in"
+          ],
+          "json_type": "string",
+          "role": "attribute"
+        },
+        {
+          "code": "geometry",
+          "column_name": "geometry",
+          "filterable_ops": [],
+          "json_type": "string",
+          "role": "attribute"
+        }
+      ],
+      "catalog_type_name": null,
+      "code": "field",
+      "content_hash": "81f1bcf336e73cfe2e853facaa5d5d2c363c544d2102ad62e8ce057a91905918",
+      "description": "A managed field with boundary geometry.",
+      "display_name": "Field",
+      "meta_class_id": null,
+      "meta_class_name": null,
+      "namespace": "crop",
+      "row_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "area_ha": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Area Ha"
+          },
+          "farm_id": {
+            "title": "Farm Id",
+            "type": "integer"
+          },
+          "field_id": {
+            "title": "Field Id",
+            "type": "integer"
+          },
+          "geometry": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Geometry"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "soil_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Soil Type"
+          }
+        },
+        "required": [
+          "field_id",
+          "farm_id",
+          "name"
+        ],
+        "title": "FieldRow",
+        "type": "object"
+      },
+      "row_type": "portal.crop_field_row",
+      "schema_id": "goliath.semantic/crop/field/1",
+      "schema_version": "1",
+      "storage_relation": "crop_core.v_field"
+    },
+    "crop.input_lot": {
+      "attributes": [
+        {
+          "code": "input_lot_id",
+          "column_name": "id",
+          "filterable_ops": [],
+          "json_type": "integer",
+          "role": "key"
+        },
+        {
+          "code": "item_id",
+          "column_name": "item_id",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "integer",
+          "role": "filter"
+        },
+        {
+          "code": "item_name",
+          "column_name": "item_name",
+          "filterable_ops": [
+            "ilike"
+          ],
+          "json_type": "string",
+          "role": "label"
+        },
+        {
+          "code": "lot",
+          "column_name": "lot",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "string",
+          "role": "attribute"
+        },
+        {
+          "code": "on_hand",
+          "column_name": "on_hand",
+          "filterable_ops": [],
+          "json_type": "number",
+          "role": "measure"
+        },
+        {
+          "code": "unit",
+          "column_name": "unit",
+          "filterable_ops": [],
+          "json_type": "string",
+          "role": "attribute"
+        }
+      ],
+      "catalog_type_name": null,
+      "code": "input_lot",
+      "content_hash": "58f0e8393d845d3602f78712479ad18d536519d691de87a93d31b466701630ce",
+      "description": "Inventory lot for seeds, fertilizer, or crop protection products.",
+      "display_name": "Input lot",
+      "meta_class_id": null,
+      "meta_class_name": null,
+      "namespace": "crop",
+      "row_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "input_lot_id": {
+            "title": "Input Lot Id",
+            "type": "integer"
+          },
+          "item_id": {
+            "title": "Item Id",
+            "type": "integer"
+          },
+          "item_name": {
+            "title": "Item Name",
+            "type": "string"
+          },
+          "lot": {
+            "title": "Lot",
+            "type": "string"
+          },
+          "on_hand": {
+            "title": "On Hand",
+            "type": "number"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          }
+        },
+        "required": [
+          "input_lot_id",
+          "item_id",
+          "item_name",
+          "lot",
+          "on_hand",
+          "unit"
+        ],
+        "title": "InputLotRow",
+        "type": "object"
+      },
+      "row_type": "portal.crop_input_lot_row",
+      "schema_id": "goliath.semantic/crop/input_lot/1",
+      "schema_version": "1",
+      "storage_relation": "crop_ops.v_input_lot"
+    },
+    "crop.operation": {
+      "attributes": [
+        {
+          "code": "operation_id",
+          "column_name": "id",
+          "filterable_ops": [],
+          "json_type": "integer",
+          "role": "key"
+        },
+        {
+          "code": "planting_id",
+          "column_name": "planting_id",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "integer",
+          "role": "filter"
+        },
+        {
+          "code": "kind",
+          "column_name": "kind",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "string",
+          "role": "filter"
+        },
+        {
+          "code": "performed_on",
+          "column_name": "performed_on",
+          "filterable_ops": [],
+          "json_type": "string",
+          "role": "attribute"
+        },
+        {
+          "code": "rate",
+          "column_name": "rate",
+          "filterable_ops": [],
+          "json_type": "number",
+          "role": "measure"
+        },
+        {
+          "code": "equipment",
+          "column_name": "equipment",
+          "filterable_ops": [],
+          "json_type": "string",
+          "role": "attribute"
+        },
+        {
+          "code": "operator",
+          "column_name": "operator",
+          "filterable_ops": [],
+          "json_type": "string",
+          "role": "attribute"
+        }
+      ],
+      "catalog_type_name": null,
+      "code": "operation",
+      "content_hash": "d121f969e0066666103c9dea05eb27dafd0569c5ec4a4c0374ba3b3499ad2163",
+      "description": "Irrigation, fertilization, spraying, harvest, or other field work.",
+      "display_name": "Field operation",
+      "meta_class_id": null,
+      "meta_class_name": null,
+      "namespace": "crop",
+      "row_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "equipment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Equipment"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "operation_id": {
+            "title": "Operation Id",
+            "type": "integer"
+          },
+          "operator": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Operator"
+          },
+          "performed_on": {
+            "format": "date-time",
+            "title": "Performed On",
+            "type": "string"
+          },
+          "planting_id": {
+            "title": "Planting Id",
+            "type": "integer"
+          },
+          "rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Rate"
+          },
+          "rate_unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Rate Unit"
+          }
+        },
+        "required": [
+          "operation_id",
+          "planting_id",
+          "kind",
+          "performed_on"
+        ],
+        "title": "OperationRow",
+        "type": "object"
+      },
+      "row_type": "portal.crop_operation_row",
+      "schema_id": "goliath.semantic/crop/operation/1",
+      "schema_version": "1",
+      "storage_relation": "crop_ops.v_operation"
+    },
+    "crop.planting": {
+      "attributes": [
+        {
+          "code": "planting_id",
+          "column_name": "id",
+          "filterable_ops": [],
+          "json_type": "integer",
+          "role": "key"
+        },
+        {
+          "code": "field_id",
+          "column_name": "field_id",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "integer",
+          "role": "filter"
+        },
+        {
+          "code": "season_id",
+          "column_name": "season_id",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "integer",
+          "role": "filter"
+        },
+        {
+          "code": "variety_id",
+          "column_name": "variety_id",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "integer",
+          "role": "filter"
+        },
+        {
+          "code": "sown_on",
+          "column_name": "sown_on",
+          "filterable_ops": [],
+          "json_type": "string",
+          "role": "attribute"
+        },
+        {
+          "code": "density",
+          "column_name": "density",
+          "filterable_ops": [],
+          "json_type": "number",
+          "role": "measure"
+        },
+        {
+          "code": "seed_lot",
+          "column_name": "seed_lot",
+          "filterable_ops": [],
+          "json_type": "string",
+          "role": "attribute"
+        }
+      ],
+      "catalog_type_name": null,
+      "code": "planting",
+      "content_hash": "ddb786e9e8bab172eff9802d502a8eac699e841817fd03ee935c1cd3648c0cc7",
+      "description": "A variety sown on a field for a season.",
+      "display_name": "Planting",
+      "meta_class_id": null,
+      "meta_class_name": null,
+      "namespace": "crop",
+      "row_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "density": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Density"
+          },
+          "field_id": {
+            "title": "Field Id",
+            "type": "integer"
+          },
+          "planting_id": {
+            "title": "Planting Id",
+            "type": "integer"
+          },
+          "season_id": {
+            "title": "Season Id",
+            "type": "integer"
+          },
+          "seed_lot": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Seed Lot"
+          },
+          "sown_on": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Sown On"
+          },
+          "variety_id": {
+            "title": "Variety Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "planting_id",
+          "field_id",
+          "season_id",
+          "variety_id"
+        ],
+        "title": "PlantingRow",
+        "type": "object"
+      },
+      "row_type": "portal.crop_planting_row",
+      "schema_id": "goliath.semantic/crop/planting/1",
+      "schema_version": "1",
+      "storage_relation": "crop_core.v_planting"
+    },
+    "crop.plot": {
+      "attributes": [
+        {
+          "code": "plot_id",
+          "column_name": "id",
+          "filterable_ops": [],
+          "json_type": "integer",
+          "role": "key"
+        },
+        {
+          "code": "field_id",
+          "column_name": "field_id",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "integer",
+          "role": "filter"
+        },
+        {
+          "code": "trial_id",
+          "column_name": "trial_id",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "integer",
+          "role": "filter"
+        },
+        {
+          "code": "code",
+          "column_name": "code",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "string",
+          "role": "label"
+        },
+        {
+          "code": "geometry",
+          "column_name": "geometry",
+          "filterable_ops": [],
+          "json_type": "string",
+          "role": "attribute"
+        }
+      ],
+      "catalog_type_name": null,
+      "code": "plot",
+      "content_hash": "104878ae40d13784fb76b7618a6e4939a5cdefa9cbdaeb640978de0b4b47a0b8",
+      "description": "A sub-field plot used in research trials.",
+      "display_name": "Trial plot",
+      "meta_class_id": null,
+      "meta_class_name": null,
+      "namespace": "crop",
+      "row_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "field_id": {
+            "title": "Field Id",
+            "type": "integer"
+          },
+          "geometry": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Geometry"
+          },
+          "plot_id": {
+            "title": "Plot Id",
+            "type": "integer"
+          },
+          "trial_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Trial Id"
+          }
+        },
+        "required": [
+          "plot_id",
+          "field_id",
+          "code"
+        ],
+        "title": "PlotRow",
+        "type": "object"
+      },
+      "row_type": "portal.crop_plot_row",
+      "schema_id": "goliath.semantic/crop/plot/1",
+      "schema_version": "1",
+      "storage_relation": "crop_core.v_plot"
+    },
+    "crop.season": {
+      "attributes": [
+        {
+          "code": "season_id",
+          "column_name": "id",
+          "filterable_ops": [],
+          "json_type": "integer",
+          "role": "key"
+        },
+        {
+          "code": "farm_id",
+          "column_name": "farm_id",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "integer",
+          "role": "filter"
+        },
+        {
+          "code": "year",
+          "column_name": "year",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "integer",
+          "role": "attribute"
+        },
+        {
+          "code": "campaign",
+          "column_name": "campaign",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "string",
+          "role": "attribute"
+        },
+        {
+          "code": "status",
+          "column_name": "status",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "string",
+          "role": "attribute"
+        }
+      ],
+      "catalog_type_name": null,
+      "code": "season",
+      "content_hash": "553bbb1449797bb253f12e253ad5b9384dfe654c47ddb76967b1b4c8f8ef61dd",
+      "description": "Growing season for a farm.",
+      "display_name": "Season",
+      "meta_class_id": null,
+      "meta_class_name": null,
+      "namespace": "crop",
+      "row_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "campaign": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Campaign"
+          },
+          "farm_id": {
+            "title": "Farm Id",
+            "type": "integer"
+          },
+          "season_id": {
+            "title": "Season Id",
+            "type": "integer"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "year": {
+            "title": "Year",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "season_id",
+          "farm_id",
+          "year"
+        ],
+        "title": "SeasonRow",
+        "type": "object"
+      },
+      "row_type": "portal.crop_season_row",
+      "schema_id": "goliath.semantic/crop/season/1",
+      "schema_version": "1",
+      "storage_relation": "crop_core.v_season"
+    },
+    "crop.trial": {
+      "attributes": [
+        {
+          "code": "trial_id",
+          "column_name": "id",
+          "filterable_ops": [],
+          "json_type": "integer",
+          "role": "key"
+        },
+        {
+          "code": "season_id",
+          "column_name": "season_id",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "integer",
+          "role": "filter"
+        },
+        {
+          "code": "name",
+          "column_name": "name",
+          "filterable_ops": [
+            "ilike"
+          ],
+          "json_type": "string",
+          "role": "label"
+        },
+        {
+          "code": "design",
+          "column_name": "design",
+          "filterable_ops": [],
+          "json_type": "string",
+          "role": "attribute"
+        },
+        {
+          "code": "treatment_count",
+          "column_name": "treatment_count",
+          "filterable_ops": [],
+          "json_type": "integer",
+          "role": "measure"
+        },
+        {
+          "code": "replicate_count",
+          "column_name": "replicate_count",
+          "filterable_ops": [],
+          "json_type": "integer",
+          "role": "measure"
+        }
+      ],
+      "catalog_type_name": null,
+      "code": "trial",
+      "content_hash": "0b9dac63b1d5e9cdbd5e2b031cb5cb50447bc0a48eee8ddd7f91f7de250acd34",
+      "description": "Research trial with treatments and replicates.",
+      "display_name": "Trial",
+      "meta_class_id": null,
+      "meta_class_name": null,
+      "namespace": "crop",
+      "row_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "design": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Design"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "replicate_count": {
+            "default": 0,
+            "title": "Replicate Count",
+            "type": "integer"
+          },
+          "season_id": {
+            "title": "Season Id",
+            "type": "integer"
+          },
+          "treatment_count": {
+            "default": 0,
+            "title": "Treatment Count",
+            "type": "integer"
+          },
+          "trial_id": {
+            "title": "Trial Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "trial_id",
+          "season_id",
+          "name"
+        ],
+        "title": "TrialRow",
+        "type": "object"
+      },
+      "row_type": "portal.crop_trial_row",
+      "schema_id": "goliath.semantic/crop/trial/1",
+      "schema_version": "1",
+      "storage_relation": "crop_trial.v_trial"
+    },
+    "crop.variety": {
+      "attributes": [
+        {
+          "code": "variety_id",
+          "column_name": "id",
+          "filterable_ops": [],
+          "json_type": "integer",
+          "role": "key"
+        },
+        {
+          "code": "crop_id",
+          "column_name": "crop_id",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "integer",
+          "role": "filter"
+        },
+        {
+          "code": "species",
+          "column_name": "species",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "string",
+          "role": "attribute"
+        },
+        {
+          "code": "variety",
+          "column_name": "variety",
+          "filterable_ops": [
+            "ilike"
+          ],
+          "json_type": "string",
+          "role": "label"
+        },
+        {
+          "code": "maturity_days",
+          "column_name": "maturity_days",
+          "filterable_ops": [],
+          "json_type": "integer",
+          "role": "attribute"
+        },
+        {
+          "code": "gdd_base_c",
+          "column_name": "gdd_base_c",
+          "filterable_ops": [],
+          "json_type": "number",
+          "role": "attribute"
+        }
+      ],
+      "catalog_type_name": null,
+      "code": "variety",
+      "content_hash": "afe6bfd92b8e62e4e1409b9e2ece764924ba4cff4cb9210d7572ea315b1f89d0",
+      "description": "Crop species and variety metadata.",
+      "display_name": "Crop variety",
+      "meta_class_id": null,
+      "meta_class_name": null,
+      "namespace": "crop",
+      "row_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "crop_id": {
+            "title": "Crop Id",
+            "type": "integer"
+          },
+          "gdd_base_c": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Gdd Base C"
+          },
+          "maturity_days": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Maturity Days"
+          },
+          "species": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Species"
+          },
+          "variety": {
+            "title": "Variety",
+            "type": "string"
+          },
+          "variety_id": {
+            "title": "Variety Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "variety_id",
+          "crop_id",
+          "variety"
+        ],
+        "title": "VarietyRow",
+        "type": "object"
+      },
+      "row_type": "portal.crop_variety_row",
+      "schema_id": "goliath.semantic/crop/variety/1",
+      "schema_version": "1",
+      "storage_relation": "crop_core.v_variety"
+    }
+  },
+  "requests": {
+    "crop.field.list_by_farm": {
+      "base_namespace": null,
+      "content_hash": "88ad172cb9f8bf09fd7c019465199ee23948ba1f52efd3349dcd1c9c3b3d7dbd",
+      "entity_code": "field",
+      "filter_template": null,
+      "max_rows": 500,
+      "namespace": "crop",
+      "params_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "farm_id": {
+            "title": "Farm Id",
+            "type": "integer"
+          },
+          "season_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Season Id"
+          }
+        },
+        "required": [
+          "farm_id"
+        ],
+        "title": "FieldListParams",
+        "type": "object"
+      },
+      "request_code": "crop.field.list_by_farm",
+      "required_permission": "crop.field.read",
+      "result_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "area_ha": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Area Ha"
+          },
+          "farm_id": {
+            "title": "Farm Id",
+            "type": "integer"
+          },
+          "field_id": {
+            "title": "Field Id",
+            "type": "integer"
+          },
+          "geometry": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Geometry"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "soil_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Soil Type"
+          }
+        },
+        "required": [
+          "field_id",
+          "farm_id",
+          "name"
+        ],
+        "title": "FieldRow",
+        "type": "object"
+      },
+      "row_type": "portal.crop_field_row",
+      "schema_id": "goliath.semantic/crop/crop.field.list_by_farm/1",
+      "target_kind": "function",
+      "target_name": "crop_core.fn_semantic_field_list_by_farm",
+      "version": "1"
+    },
+    "crop.operation.list": {
+      "base_namespace": null,
+      "content_hash": "58ab5406ae24fb6a63d9371239bb0a2cad36bc46eb08b9983eff833c44532bd1",
+      "entity_code": "operation",
+      "filter_template": null,
+      "max_rows": 500,
+      "namespace": "crop",
+      "params_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "from": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "From"
+          },
+          "kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Kind"
+          },
+          "planting_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Planting Id"
+          },
+          "to": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "To"
+          }
+        },
+        "title": "OperationListParams",
+        "type": "object"
+      },
+      "request_code": "crop.operation.list",
+      "required_permission": "crop.operation.read",
+      "result_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "equipment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Equipment"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "operation_id": {
+            "title": "Operation Id",
+            "type": "integer"
+          },
+          "operator": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Operator"
+          },
+          "performed_on": {
+            "format": "date-time",
+            "title": "Performed On",
+            "type": "string"
+          },
+          "planting_id": {
+            "title": "Planting Id",
+            "type": "integer"
+          },
+          "rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Rate"
+          },
+          "rate_unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Rate Unit"
+          }
+        },
+        "required": [
+          "operation_id",
+          "planting_id",
+          "kind",
+          "performed_on"
+        ],
+        "title": "OperationRow",
+        "type": "object"
+      },
+      "row_type": "portal.crop_operation_row",
+      "schema_id": "goliath.semantic/crop/crop.operation.list/1",
+      "target_kind": "function",
+      "target_name": "crop_ops.fn_semantic_operation_list",
+      "version": "1"
+    },
+    "crop.planting.list_by_season": {
+      "base_namespace": null,
+      "content_hash": "4b6e241ef1b52c803bb3c561691eeacc6090c56a167ec3d67c9f8349d11771f8",
+      "entity_code": "planting",
+      "filter_template": null,
+      "max_rows": 500,
+      "namespace": "crop",
+      "params_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "field_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Field Id"
+          },
+          "season_id": {
+            "title": "Season Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "season_id"
+        ],
+        "title": "PlantingListParams",
+        "type": "object"
+      },
+      "request_code": "crop.planting.list_by_season",
+      "required_permission": "crop.planting.read",
+      "result_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "density": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Density"
+          },
+          "field_id": {
+            "title": "Field Id",
+            "type": "integer"
+          },
+          "planting_id": {
+            "title": "Planting Id",
+            "type": "integer"
+          },
+          "season_id": {
+            "title": "Season Id",
+            "type": "integer"
+          },
+          "seed_lot": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Seed Lot"
+          },
+          "sown_on": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Sown On"
+          },
+          "variety_id": {
+            "title": "Variety Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "planting_id",
+          "field_id",
+          "season_id",
+          "variety_id"
+        ],
+        "title": "PlantingRow",
+        "type": "object"
+      },
+      "row_type": "portal.crop_planting_row",
+      "schema_id": "goliath.semantic/crop/crop.planting.list_by_season/1",
+      "target_kind": "function",
+      "target_name": "crop_core.fn_semantic_planting_list_by_season",
+      "version": "1"
+    },
+    "crop.trial.results": {
+      "base_namespace": null,
+      "content_hash": "689e2abbb9acc9af51ff29e7000a45eb5f823fc39b96816a75378b707a7c3786",
+      "entity_code": "trial",
+      "filter_template": null,
+      "max_rows": 2000,
+      "namespace": "crop",
+      "params_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "trial_id": {
+            "title": "Trial Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "trial_id"
+        ],
+        "title": "TrialResultsParams",
+        "type": "object"
+      },
+      "request_code": "crop.trial.results",
+      "required_permission": "crop.trial.read",
+      "result_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "measured_on": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Measured On"
+          },
+          "metric": {
+            "title": "Metric",
+            "type": "string"
+          },
+          "plot_code": {
+            "title": "Plot Code",
+            "type": "string"
+          },
+          "plot_id": {
+            "title": "Plot Id",
+            "type": "integer"
+          },
+          "replicate_number": {
+            "title": "Replicate Number",
+            "type": "integer"
+          },
+          "treatment_code": {
+            "title": "Treatment Code",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Value"
+          }
+        },
+        "required": [
+          "plot_id",
+          "plot_code",
+          "treatment_code",
+          "replicate_number",
+          "metric"
+        ],
+        "title": "TrialResultRow",
+        "type": "object"
+      },
+      "row_type": "portal.crop_trial_row",
+      "schema_id": "goliath.semantic/crop/crop.trial.results/1",
+      "target_kind": "function",
+      "target_name": "crop_trial.fn_trial_results",
+      "version": "1"
+    }
+  }
+}
