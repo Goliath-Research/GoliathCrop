@@ -346,7 +346,17 @@ BEGIN
   IF v_has_moisture AND v_field_id IS NOT NULL THEN
     PERFORM crop_irr.sp_wake_schedule_for_field(
       v_field_id,
-      (v_last AT TIME ZONE 'UTC')::date,
+      (
+        v_last AT TIME ZONE COALESCE(
+          (
+            SELECT fm.timezone
+            FROM crop_core.fields fld
+            INNER JOIN crop_core.farms fm ON fm.id = fld.farm_id
+            WHERE fld.id = v_field_id
+          ),
+          'UTC'
+        )
+      )::date,
       'soil_moisture_updated'
     );
   END IF;

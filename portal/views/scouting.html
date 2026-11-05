@@ -58,16 +58,40 @@
         return "●".repeat(Number(n)) + "○".repeat(5 - Number(n));
       }
 
+      function escapeHtml(value) {
+        return String(value)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function safeHttpUri(uri) {
+        try {
+          const parsed = new URL(String(uri));
+          if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+            return parsed.href;
+          }
+        } catch (_) {
+          /* ignore invalid URIs */
+        }
+        return null;
+      }
+
       async function refresh() {
         const fieldId = Number(fieldInput.value);
         const rows = await CropPortal.runSemanticRequest("crop.scouting.list_by_field", {
           field_id: fieldId,
         });
         list.innerHTML = rows
-          .map(
-            (row) =>
-              `<li><strong>${row.pest_name || row.pest}</strong> ${severityLabel(row.severity)}<div class="crop-muted">${new Date(row.observed_at).toLocaleString()}${row.geo_json ? " · pinned" : ""}</div>${row.photo_uri ? `<a href="${row.photo_uri}" target="_blank" rel="noopener">Photo</a>` : ""}</li>`
-          )
+          .map((row) => {
+            const pest = escapeHtml(row.pest_name || row.pest);
+            const photoHref = row.photo_uri ? safeHttpUri(row.photo_uri) : null;
+            const photoLink = photoHref
+              ? `<a href="${escapeHtml(photoHref)}" target="_blank" rel="noopener">Photo</a>`
+              : "";
+            return `<li><strong>${pest}</strong> ${severityLabel(row.severity)}<div class="crop-muted">${new Date(row.observed_at).toLocaleString()}${row.geo_json ? " · pinned" : ""}</div>${photoLink}</li>`;
+          })
           .join("");
       }
 

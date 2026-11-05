@@ -17,18 +17,21 @@ class IrrigationScheduleResult:
     depletion_mm: float
 
 
-def _latest_soil_moisture(cur, field_id: int) -> float | None:
+def _latest_soil_moisture(cur, field_id: int, as_of: date) -> float | None:
     cur.execute(
         """
         SELECT r.value
         FROM crop_obs.sensor_readings r
         INNER JOIN crop_obs.devices d ON d.id = r.device_id
+        INNER JOIN crop_core.fields fld ON fld.id = d.field_id
+        INNER JOIN crop_core.farms fm ON fm.id = fld.farm_id
         WHERE d.field_id = %s
           AND r.metric IN ('soil_moisture_pct', 'soil_moisture', 'vwc')
+          AND (r.ts AT TIME ZONE COALESCE(fm.timezone, 'UTC'))::date <= %s
         ORDER BY r.ts DESC
         LIMIT 1
         """,
-        (field_id,),
+        (field_id, as_of),
     )
     row = cur.fetchone()
     if row is None or row[0] is None:
@@ -90,7 +93,7 @@ def run_irrigation_schedule(
             taw_mm = float(prev[1]) if prev and prev[1] is not None else 150.0
             kc = float(prev[2]) if prev and prev[2] is not None else 1.0
 
-            soil_moisture = _latest_soil_moisture(cur, field_id)
+            soil_moisture = _latest_soil_moisture(cur, field_id, target_date)
             irrigation_mm = _irrigation_applied_on_date(cur, field_id, target_date)
 
             result = compute_daily_balance(
