@@ -236,6 +236,54 @@ BEGIN
     );
   END IF;
 END $$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_type t
+    JOIN pg_namespace n ON n.oid = t.typnamespace
+    WHERE n.nspname = 'portal' AND t.typname = 'crop_yield_row'
+  ) THEN
+    CREATE TYPE portal.crop_yield_row AS (
+  planting_id integer,
+  season_id integer,
+  field_id integer
+    );
+  END IF;
+END $$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_type t
+    JOIN pg_namespace n ON n.oid = t.typnamespace
+    WHERE n.nspname = 'portal' AND t.typname = 'crop_sample_row'
+  ) THEN
+    CREATE TYPE portal.crop_sample_row AS (
+  sample_id integer,
+  field_id integer,
+  kind text,
+  collected_on text
+    );
+  END IF;
+END $$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_type t
+    JOIN pg_namespace n ON n.oid = t.typnamespace
+    WHERE n.nspname = 'portal' AND t.typname = 'crop_groundstation_link_row'
+  ) THEN
+    CREATE TYPE portal.crop_groundstation_link_row AS (
+  link_id integer,
+  field_id integer,
+  external_flight_ref text,
+  source_product text,
+  registered_at text
+    );
+  END IF;
+END $$;
 DO $$
 BEGIN
   IF NOT EXISTS (

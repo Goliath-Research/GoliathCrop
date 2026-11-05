@@ -91,6 +91,9 @@ BEGIN
   PERFORM crop_core.sp_register_crop_nav_child(
     v_root_id, 'Trials', 40, 'crop_trials', 'crop.trial.list_by_season'
   );
+  PERFORM crop_core.sp_register_crop_nav_child(
+    v_root_id, 'Yield', 43, 'crop_yield', 'crop.yield.by_season'
+  );
 END;
 $$;
 

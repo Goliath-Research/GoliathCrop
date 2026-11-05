@@ -32,3 +32,10 @@ def test_import_boundaries_action_metadata() -> None:
     spec = next(a for a in ACTIONS if a.action_name == "crop.field.import_boundaries")
     assert spec.capability == "crop.ingest"
     assert spec.in_process_handler is not None
+
+
+def test_yield_predict_action_metadata() -> None:
+    spec = next(a for a in ACTIONS if a.action_name == "crop.yield.predict")
+    assert spec.capability == "crop.model"
+    assert spec.tool == "crop-yield-model"
+    assert spec.in_process_handler is not None

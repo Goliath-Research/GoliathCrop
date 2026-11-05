@@ -1,6 +1,6 @@
 # GoliathCrop — Crop Management plan
 
-Status: in development (Phase 4: irrigation scheduling, scouting, phone field forms; Phase 3 sensing landed on main).
+Status: Phase 5 landed — yield prediction, ecosystem integration hooks, ISOBUS/ADAPT stubs. Planned roadmap complete through Phase 5.
 
 ## Vision and users
 
@@ -264,7 +264,7 @@ flowchart LR
 - **Phase 2 — MVP (farm + research station):** farm map, field detail, operations log, inventory, trials (plots, treatments, replicates, observations); phone-usable web forms; Open-Meteo/NOAA weather worker; GoliathApp auth; $0 paid APIs; CPU workers.
 - **Phase 3 — Sensing:** sensor ingest into hypertables with wake, Sentinel-2/Landsat NDVI to COGs, drone upload processing, alerts.
 - **Phase 4 — Decisions and field app:** irrigation scheduling (FAO-56 water balance), scouting, phone-usable web field forms (offline native app after MVP). **In progress / landing on main.**
-- **Phase 5 — ML and ecosystem:** yield prediction on on-demand RunPod GPUs, GoliathOmics/GroundStation links, ISOBUS/ADAPT, paid providers and auth upgrade if needed.
+- **Phase 5 — ML and ecosystem:** yield prediction on on-demand RunPod GPUs, GoliathOmics/GroundStation links, ISOBUS/ADAPT, paid providers and auth upgrade if needed. **Landed:** `crop_yield` + `crop.yield.predict`, integration actions/reads, machine import stubs; see [integrations.md](integrations.md).
 
 ## Decisions
 

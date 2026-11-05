@@ -204,3 +204,67 @@ class IrrigationScheduleOutput(BaseModel):
     balance_date: date
     recommended_irrigation_mm: float
     depletion_mm: float
+
+
+class YieldPredictInput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    season_id: int
+
+
+class YieldPredictOutput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    season_id: int
+    planting_count: int
+    predictions_written: int
+    model_backend: str
+
+
+class LinkOmicsInput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    omics_run_ref: str = Field(
+        description="Opaque GoliathOmics run reference (semantic request code or external URI)."
+    )
+    sample_id: Optional[int] = None
+    plot_id: Optional[int] = None
+
+
+class LinkOmicsOutput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    linked: bool
+
+
+class RegisterGroundstationInput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    field_id: int
+    external_flight_ref: str
+    telemetry_uri: Optional[str] = None
+    imagery_uri: Optional[str] = None
+    notes: Optional[str] = None
+
+
+class RegisterGroundstationOutput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    link_id: int
+
+
+class MachineImportInput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    format: str = Field(description="adapt | isobus | yield_monitor")
+    payload: str = Field(description="File contents (JSON or CSV text)")
+
+
+class MachineImportOutput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    format: str
+    rows_parsed: int
+    rows_applied: int
+    incomplete_edges: list[str]
+    notes: str

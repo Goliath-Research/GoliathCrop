@@ -2,14 +2,15 @@
 
 GoliathApp specialization for crop management: farms, fields and plots, operations, inputs, sensors, weather, satellite and drone imagery, and research trials. Initial targets are a commercial farm and a research station.
 
-Status: **in development** — Phase 3 sensing adds TimescaleDB sensor ingest with Postgres wakes, imagery scenes and COG paths, STAC fetch, drone upload processing, and frost/stress/pest alerts on top of Phase 2 MVP.
+Status: **Phase 5 complete** — yield prediction (CPU baseline, RunPod-ready), GoliathOmics/GroundStation integration hooks, ISOBUS/ADAPT import stubs. See [`docs/plan.md`](docs/plan.md) and [`docs/integrations.md`](docs/integrations.md).
 
 ## Layout
 
 | Path | Purpose |
 | --- | --- |
 | [`docs/plan.md`](docs/plan.md) | Full plan: domain model, ingestion, DomainPrograms, schema, RBAC, UI, roadmap |
-| [`docs/semantic-layer.md`](docs/semantic-layer.md) | Semantic namespace `crop`, export/seed, Phase 1 requests |
+| [`docs/semantic-layer.md`](docs/semantic-layer.md) | Semantic namespace `crop`, export/seed, named requests |
+| [`docs/integrations.md`](docs/integrations.md) | GoliathOmics, GroundStation, machine data, RunPod env vars |
 | [`src/goliath_crop/`](src/goliath_crop/) | Python package (semantic specs, actions, seed helpers) |
 | [`database/schema/`](database/schema/) | Ordered SQL apply scripts (PostGIS + views + semantic functions) |
 | [`portal/`](portal/) | Mobile-first domain views and FrameKey registry for the GoliathApp portal shell |

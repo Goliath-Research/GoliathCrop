@@ -17,7 +17,7 @@ Apply order: GoliathApp `apply_schema.sh`, then `./scripts/apply_domain_schema.s
 
 ## Entities
 
-Entities and `storage_relation` views match [docs/plan.md](plan.md). Phase 3 adds sensors, readings, and imagery scenes. Phase 4 adds `crop.scouting` and `crop.irrigation`.
+Entities and `storage_relation` views match [docs/plan.md](plan.md). Phase 3 adds sensors, readings, and imagery scenes. Phase 4 adds `crop.scouting` and `crop.irrigation`. Phase 5 adds `crop.yield`, `crop.sample`, and `crop.groundstation_link` (see [integrations.md](integrations.md)).
 
 ## Named requests (MVP + sensing + Phase 4)
 
@@ -37,6 +37,9 @@ Entities and `storage_relation` views match [docs/plan.md](plan.md). Phase 3 add
 | `crop.scene.list_by_field` | `crop_img.fn_semantic_scene_list` |
 | `crop.scouting.list_by_field` | `crop_scout.fn_semantic_list_by_field` |
 | `crop.irrigation.schedule_by_field` | `crop_irr.fn_semantic_schedule_by_field` |
+| `crop.yield.by_season` | `crop_yield.fn_semantic_yield_by_season` |
+| `crop.sample.list_by_field` | `crop_lab.fn_semantic_sample_list_by_field` |
+| `crop.groundstation.list_by_field` | `crop_link.fn_semantic_groundstation_by_field` |
 
 Targets use `target_kind=function` because GoliathApp semantic runner v1 executes organization- and farm-scoped reads inside SQL (see `crop_core.fn_user_can_access_farm`).
 
@@ -49,7 +52,7 @@ Domain actions publish through the setuptools entry point:
 crop = "goliath_crop.actions.catalog:ACTIONS"
 ```
 
-Phase 4 adds `crop.scouting.record` (RBAC) and hidden worker action `crop.irrigation.schedule`. Earlier phases ship field import, operations, weather refresh, trials, sensors, imagery, and alerts — see `src/goliath_crop/actions/catalog.py`.
+Phase 5 adds `crop.yield.predict`, integration actions, and machine import stubs — see `src/goliath_crop/actions/catalog.py` and [integrations.md](integrations.md).
 
 Sync into `wf.workflow_action` with GoliathApp `seed_action_catalog.py --use-db` after installing this package.
 

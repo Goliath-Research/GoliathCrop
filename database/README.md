@@ -28,8 +28,11 @@ Scripts under `database/schema/` are idempotent (`CREATE IF NOT EXISTS`, `CREATE
 | `crop_alerts` | Threshold rules and alert events (frost, stress, pest) |
 | `crop_scout` | Scouting observations, pest catalog, photos |
 | `crop_irr` | FAO-56 field water balance and irrigation recommendations |
+| `crop_yield` | Measured yield, ML predictions, season semantic reads |
+| `crop_lab` | Soil/tissue samples, lab results, omics run references |
+| `crop_link` | GoliathGroundStation flight registrations |
 | `crop_wf` | Domain processing task backlog + Postgres NOTIFY wakes |
 
-Semantic **views** (`v_*`) back `storage_relation` on entities. Named reads use **functions** scoped to the session user (organization membership and optional farm membership). Phase 2 adds write procs `crop_ops.sp_record_operation` and `crop_trial.sp_record_plot_observation` for portal actions. Phase 3 adds sensor ingest (`crop_obs.sp_ingest_sensor_batch`), imagery registration, and alert procs with dual-activation wakes via `crop_wf.sp_enqueue_processing_task`. Phase 4 adds scouting writes (`crop_scout.sp_record_observation`), irrigation balance storage (`crop_irr.sp_store_balance`), and irrigation wakes on weather ET0 upserts and soil-moisture ingest (`crop_irr.sp_wake_schedule_for_field`).
+Semantic **views** (`v_*`) back `storage_relation` on entities. Named reads use **functions** scoped to the session user (organization membership and optional farm membership). Phase 2 adds write procs `crop_ops.sp_record_operation` and `crop_trial.sp_record_plot_observation` for portal actions. Phase 3 adds sensor ingest (`crop_obs.sp_ingest_sensor_batch`), imagery registration, and alert procs with dual-activation wakes via `crop_wf.sp_enqueue_processing_task`. Phase 4 adds scouting writes (`crop_scout.sp_record_observation`), irrigation balance storage (`crop_irr.sp_store_balance`), and irrigation wakes on weather ET0 upserts and soil-moisture ingest (`crop_irr.sp_wake_schedule_for_field`). Phase 5 adds yield prediction storage (`crop_yield.sp_store_prediction`), omics/ground-station link procs, and weekly yield backlog enqueue.
 
 **TimescaleDB:** enable the extension when your host supports it (Neon Apache-2: hypertables, `time_bucket`, `drop_chunks` only). If the extension is missing, readings stay on a regular Postgres table and bucketing falls back to `date_trunc`.
