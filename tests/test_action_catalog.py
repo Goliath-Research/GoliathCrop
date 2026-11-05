@@ -14,6 +14,7 @@ def test_phase1_domain_actions_typed() -> None:
         "crop.sensor.qc",
         "crop.imagery.process",
         "crop.alert.evaluate",
+        "crop.irrigation.schedule",
     }
     for spec in ACTIONS:
         assert spec.level == ActionLevel.DOMAIN

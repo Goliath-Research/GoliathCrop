@@ -44,6 +44,8 @@ SCRIPTS=(
   09_crop_obs_sensors.sql
   10_crop_img.sql
   11_crop_alerts.sql
+  12_crop_scout.sql
+  13_crop_irrigation.sql
 )
 
 for name in "${SCRIPTS[@]}"; do

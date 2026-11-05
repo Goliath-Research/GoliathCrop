@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Crop · Irrigation</title>
+    <link rel="stylesheet" href="../static/crop-shell.css" />
+  </head>
+  <body>
+    <h1>Irrigation planner</h1>
+    <p class="crop-muted">FAO-56 water balance vs soil moisture and logged irrigation.</p>
+    <div class="crop-toolbar">
+      <label>
+        Field ID
+        <input id="fieldId" type="number" value="10" />
+      </label>
+    </div>
+    <ul class="crop-list" id="scheduleList"></ul>
+    <p class="crop-status" id="status"></p>
+    <script src="../static/crop-api.js"></script>
+    <script>
+      const status = document.getElementById("status");
+      const list = document.getElementById("scheduleList");
+      const fieldInput = document.getElementById("fieldId");
+
+      async function refresh() {
+        const fieldId = Number(fieldInput.value);
+        const rows = await CropPortal.runSemanticRequest("crop.irrigation.schedule_by_field", {
+          field_id: fieldId,
+        });
+        if (!rows.length) {
+          list.innerHTML = "<li>No schedule yet — weather or moisture wakes compute recommendations.</li>";
+          return;
+        }
+        list.innerHTML = rows
+          .map((row) => {
+            const rec = Number(row.recommended_irrigation_mm || 0);
+            const tag = rec > 0 ? `<strong>${rec.toFixed(1)} mm recommended</strong>` : "On track";
+            return `<li>${row.schedule_date} · ${tag}<div class="crop-muted">Depletion ${Number(row.depletion_mm).toFixed(1)} mm · ETc ${Number(row.etc_mm || 0).toFixed(1)} mm${row.soil_moisture_pct != null ? ` · moisture ${Number(row.soil_moisture_pct).toFixed(0)}%` : ""}</div></li>`;
+          })
+          .join("");
+      }
+
+      fieldInput.addEventListener("change", () => refresh().catch((e) => CropPortal.setStatus(status, e.message, true)));
+      refresh().catch((err) => CropPortal.setStatus(status, err.message, true));
+    </script>
+  </body>
+</html>

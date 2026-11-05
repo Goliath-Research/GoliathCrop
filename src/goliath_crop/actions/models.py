@@ -170,3 +170,37 @@ class DroneUploadOutput(BaseModel):
 
     scene_id: int
     task_id: Optional[int] = None
+
+
+class ScoutingRecordInput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    field_id: int
+    observed_at: Optional[datetime] = None
+    pest_code: str = Field(default="other")
+    severity: int = Field(default=2, ge=1, le=5)
+    notes: Optional[str] = None
+    geo_json: Optional[str] = None
+    photo_uri: Optional[str] = None
+
+
+class ScoutingRecordOutput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    observation_id: int
+
+
+class IrrigationScheduleInput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    field_id: int
+    balance_date: Optional[date] = None
+
+
+class IrrigationScheduleOutput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    field_id: int
+    balance_date: date
+    recommended_irrigation_mm: float
+    depletion_mm: float

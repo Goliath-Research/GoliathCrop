@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Crop · Scouting</title>
+    <link rel="stylesheet" href="../static/crop-shell.css" />
+  </head>
+  <body>
+    <h1>Scouting</h1>
+    <div class="crop-toolbar">
+      <label>
+        Field ID
+        <input id="fieldId" type="number" value="10" />
+      </label>
+    </div>
+    <ul class="crop-list" id="scoutList"></ul>
+    <div class="crop-card">
+      <h2>New observation</h2>
+      <form id="scoutForm" class="crop-form-grid">
+        <label>
+          Pest
+          <select name="pest_code">
+            <option value="aphids">Aphids</option>
+            <option value="rust">Leaf rust</option>
+            <option value="weed_pressure">Weed pressure</option>
+            <option value="other">Other</option>
+          </select>
+        </label>
+        <label>
+          Severity (1–5)
+          <input name="severity" type="number" min="1" max="5" value="2" required />
+        </label>
+        <label>
+          Notes
+          <textarea name="notes" rows="2" placeholder="What you saw"></textarea>
+        </label>
+        <label>
+          Photo URL
+          <input name="photo_uri" type="url" placeholder="https://… or pasted upload URI" />
+        </label>
+        <label>
+          GPS (optional)
+          <button type="button" id="useGps" class="primary">Use my location</button>
+        </label>
+        <input name="geo_json" type="hidden" />
+        <button class="primary" type="submit">Save scouting pin</button>
+      </form>
+    </div>
+    <p class="crop-status" id="status"></p>
+    <script src="../static/crop-api.js"></script>
+    <script>
+      const status = document.getElementById("status");
+      const list = document.getElementById("scoutList");
+      const fieldInput = document.getElementById("fieldId");
+
+      function severityLabel(n) {
+        return "●".repeat(Number(n)) + "○".repeat(5 - Number(n));
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function safeHttpUri(uri) {
+        try {
+          const parsed = new URL(String(uri));
+          if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+            return parsed.href;
+          }
+        } catch (_) {
+          /* ignore invalid URIs */
+        }
+        return null;
+      }
+
+      async function refresh() {
+        const fieldId = Number(fieldInput.value);
+        const rows = await CropPortal.runSemanticRequest("crop.scouting.list_by_field", {
+          field_id: fieldId,
+        });
+        list.innerHTML = rows
+          .map((row) => {
+            const pest = escapeHtml(row.pest_name || row.pest);
+            const photoHref = row.photo_uri ? safeHttpUri(row.photo_uri) : null;
+            const photoLink = photoHref
+              ? `<a href="${escapeHtml(photoHref)}" target="_blank" rel="noopener">Photo</a>`
+              : "";
+            return `<li><strong>${pest}</strong> ${severityLabel(row.severity)}<div class="crop-muted">${new Date(row.observed_at).toLocaleString()}${row.geo_json ? " · pinned" : ""}</div>${photoLink}</li>`;
+          })
+          .join("");
+      }
+
+      document.getElementById("useGps").addEventListener("click", () => {
+        if (!navigator.geolocation) {
+          CropPortal.setStatus(status, "Geolocation not available", true);
+          return;
+        }
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const geo = {
+              type: "Point",
+              coordinates: [pos.coords.longitude, pos.coords.latitude],
+            };
+            document.querySelector('[name="geo_json"]').value = JSON.stringify(geo);
+            CropPortal.setStatus(status, "Location captured");
+          },
+          (err) => CropPortal.setStatus(status, err.message, true),
+          { enableHighAccuracy: true, timeout: 15000 }
+        );
+      });
+
+      document.getElementById("scoutForm").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const data = new FormData(event.target);
+        try {
+          await CropPortal.runAction("crop.scouting.record", {
+            field_id: Number(fieldInput.value),
+            observed_at: new Date().toISOString(),
+            pest_code: String(data.get("pest_code")),
+            severity: Number(data.get("severity")),
+            notes: String(data.get("notes") || ""),
+            geo_json: String(data.get("geo_json") || "") || null,
+            photo_uri: String(data.get("photo_uri") || "") || null,
+          });
+          event.target.reset();
+          CropPortal.setStatus(status, "Scouting observation saved");
+          await refresh();
+        } catch (err) {
+          CropPortal.setStatus(status, err.message, true);
+        }
+      });
+
+      fieldInput.addEventListener("change", () => refresh().catch((e) => CropPortal.setStatus(status, e.message, true)));
+      refresh().catch((err) => CropPortal.setStatus(status, err.message, true));
+    </script>
+  </body>
+</html>

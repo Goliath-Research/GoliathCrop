@@ -247,3 +247,47 @@ class SceneListParams(BaseModel):
     field_id: int
     from_: Optional[datetime] = Field(default=None, alias="from")
     to: Optional[datetime] = None
+
+
+class ScoutingRow(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    observation_id: int
+    field_id: int
+    observed_at: datetime
+    pest: str
+    pest_name: Optional[str] = None
+    severity: int
+    notes: Optional[str] = None
+    geo_json: Optional[str] = None
+    photo_uri: Optional[str] = None
+
+
+class ScoutingListParams(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    field_id: int
+    from_: Optional[datetime] = Field(default=None, alias="from")
+    to: Optional[datetime] = None
+
+
+class IrrigationRow(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    field_id: int
+    schedule_date: date
+    depletion_mm: float
+    soil_moisture_pct: Optional[float] = None
+    recommended_irrigation_mm: float
+    etc_mm: Optional[float] = None
+    precip_mm: Optional[float] = None
+    applied_irrigation_mm: Optional[float] = None
+    computed_at: Optional[datetime] = None
+
+
+class IrrigationScheduleParams(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    field_id: int
+    from_: Optional[date] = Field(default=None, alias="from")
+    to: Optional[date] = None

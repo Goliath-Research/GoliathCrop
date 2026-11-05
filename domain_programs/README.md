@@ -1,4 +1,4 @@
-# GoliathCrop DomainPrograms (Phase 3 sensing)
+# GoliathCrop DomainPrograms (Phase 3–4)
 
 | Program | Action | Capability | Activation |
 | --- | --- | --- | --- |
@@ -8,6 +8,7 @@
 | Imagery processing (NDVI) | `crop.imagery.process` | `crop.imagery` | Wake + claim (scene or drone upload registered) |
 | Drone upload | `crop.drone.upload` | `crop.imagery` | Wake + claim |
 | Alerts (frost, stress, pests) | `crop.alert.evaluate` | `crop.alerts` | Wake + claim (`crop_alerts.sp_open_alert`) |
+| Irrigation scheduling | `crop.irrigation.schedule` | `crop.irrigation` | Wake + claim (ET0 upsert or soil moisture ingest; `crop_irr.sp_enqueue_daily_backlog` for daily claim backlog) |
 
 Workers claim through **goliath-gateway**, then call `goliath_crop.workers.dispatch.handle`. Wake hints use Postgres `NOTIFY` on `gw1_capability_*` channels (see GoliathApp [dual activation](https://github.com/Goliath-Research/GoliathApp/blob/main/docs/dual-activation.md) and `crop_wf.sp_publish_capability_wake`).
 
@@ -15,9 +16,11 @@ Workers claim through **goliath-gateway**, then call `goliath_crop.workers.dispa
 from goliath_crop.workers.dispatch import handle
 
 handle("crop.sensor.qc", {"device_id": 1})
-handle("crop.imagery.process", {"scene_id": 42})
+handle("crop.irrigation.schedule", {"field_id": 10, "balance_date": "2026-05-04"})
 ```
 
 TimescaleDB: sensor readings use a hypertable when the extension is present (Neon Apache-2 tier). Without TimescaleDB, `crop_obs.sensor_readings` remains a plain Postgres table and `fn_readings_window` falls back to `date_trunc` bucketing.
+
+Irrigation: FAO-56 single-layer bucket in `goliath_crop.irrigation.fao56` (CPU worker). Weather upserts and soil-moisture batches call `crop_irr.sp_wake_schedule_for_field`.
 
 Imagery: STAC search uses the free Element84 Earth Search API. COG output paths come from `CROP_RASTER_ROOT` (local directory or `s3://` prefix; no secrets in repo).

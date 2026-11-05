@@ -203,6 +203,39 @@ BEGIN
     );
   END IF;
 END $$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_type t
+    JOIN pg_namespace n ON n.oid = t.typnamespace
+    WHERE n.nspname = 'portal' AND t.typname = 'crop_scouting_row'
+  ) THEN
+    CREATE TYPE portal.crop_scouting_row AS (
+  observation_id integer,
+  field_id integer,
+  observed_at text,
+  pest text,
+  severity integer
+    );
+  END IF;
+END $$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_type t
+    JOIN pg_namespace n ON n.oid = t.typnamespace
+    WHERE n.nspname = 'portal' AND t.typname = 'crop_irrigation_row'
+  ) THEN
+    CREATE TYPE portal.crop_irrigation_row AS (
+  field_id integer,
+  schedule_date text,
+  depletion_mm double precision,
+  recommended_irrigation_mm double precision
+    );
+  END IF;
+END $$;
 DO $$
 BEGIN
   IF NOT EXISTS (

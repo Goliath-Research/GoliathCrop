@@ -11,6 +11,9 @@
     "crop.reading.window": { "view": "views/sensors.html", "title": "Sensors & weather" },
     "crop.weather.daily": { "view": "views/sensors.html", "title": "Sensors & weather" },
     "crop.scene.list_by_field": { "view": "views/imagery.html", "title": "Imagery" },
+    "crop.irrigation.schedule_by_field": { "view": "views/irrigation.html", "title": "Irrigation planner" },
+    "crop.scouting.list_by_field": { "view": "views/scouting.html", "title": "Scouting" },
+    "crop.field.entry": { "view": "views/field-entry.html", "title": "Field entry" },
     "crop.trial.list_by_season": { "view": "views/trials.html", "title": "Trials" },
     "crop.trial.results": { "view": "views/trial-results.html", "title": "Trial results" }
   }
