@@ -28,9 +28,13 @@ from goliath_crop.semantic.models import (
     SensorRow,
     ReadingRow,
     SceneRow,
+    ScoutingRow,
+    IrrigationRow,
     SensorListParams,
     ReadingWindowParams,
     SceneListParams,
+    ScoutingListParams,
+    IrrigationScheduleParams,
 )
 
 FARM_ENTITY = SemanticEntitySpec(
@@ -313,6 +317,65 @@ SCENE_ENTITY = SemanticEntitySpec(
     ),
 )
 
+SCOUTING_ENTITY = SemanticEntitySpec(
+    namespace="crop",
+    code="scouting",
+    display_name="Scouting observation",
+    description="Field scouting pin with pest, severity, optional photo and map location.",
+    schema_version="1",
+    row_model=ScoutingRow,
+    storage_relation="crop_scout.v_observation",
+    attributes=(
+        SemanticAttributeSpec("observation_id", "observation_id", "integer", "key", ()),
+        SemanticAttributeSpec("field_id", "field_id", "integer", "filter", ("eq",)),
+        SemanticAttributeSpec("observed_at", "observed_at", "string", "attribute", ()),
+        SemanticAttributeSpec("pest", "pest", "string", "filter", ("eq",)),
+        SemanticAttributeSpec("severity", "severity", "integer", "measure", ("gte", "lte")),
+        SemanticAttributeSpec("photo_uri", "photo_uri", "string", "attribute", ()),
+    ),
+)
+
+IRRIGATION_ENTITY = SemanticEntitySpec(
+    namespace="crop",
+    code="irrigation",
+    display_name="Irrigation schedule",
+    description="FAO-56 water balance recommendation versus soil moisture and applied irrigation.",
+    schema_version="1",
+    row_model=IrrigationRow,
+    storage_relation="crop_irr.v_schedule",
+    attributes=(
+        SemanticAttributeSpec("field_id", "field_id", "integer", "filter", ("eq",)),
+        SemanticAttributeSpec(
+            "schedule_date",
+            "schedule_date",
+            "string",
+            "attribute",
+            ("gte", "lte"),
+        ),
+        SemanticAttributeSpec(
+            "recommended_irrigation_mm",
+            "recommended_irrigation_mm",
+            "number",
+            "measure",
+            (),
+        ),
+        SemanticAttributeSpec(
+            "depletion_mm",
+            "depletion_mm",
+            "number",
+            "measure",
+            (),
+        ),
+        SemanticAttributeSpec(
+            "soil_moisture_pct",
+            "soil_moisture_pct",
+            "number",
+            "measure",
+            (),
+        ),
+    ),
+)
+
 SEMANTIC_CATALOG: list[SemanticEntitySpec] = [
     FARM_ENTITY,
     FIELD_ENTITY,
@@ -327,6 +390,8 @@ SEMANTIC_CATALOG: list[SemanticEntitySpec] = [
     SENSOR_ENTITY,
     READING_ENTITY,
     SCENE_ENTITY,
+    SCOUTING_ENTITY,
+    IRRIGATION_ENTITY,
 ]
 
 SEMANTIC_REQUESTS: list[SemanticRequestSpec] = [
@@ -472,6 +537,30 @@ SEMANTIC_REQUESTS: list[SemanticRequestSpec] = [
         params_model=SceneListParams,
         result_row_model=SceneRow,
         required_permission="crop.imagery.read",
+        max_rows=500,
+    ),
+    SemanticRequestSpec(
+        request_code="crop.scouting.list_by_field",
+        version="1",
+        namespace="crop",
+        entity_code="scouting",
+        target_kind="function",
+        target_name="crop_scout.fn_semantic_list_by_field",
+        params_model=ScoutingListParams,
+        result_row_model=ScoutingRow,
+        required_permission="crop.scouting.read",
+        max_rows=500,
+    ),
+    SemanticRequestSpec(
+        request_code="crop.irrigation.schedule_by_field",
+        version="1",
+        namespace="crop",
+        entity_code="irrigation",
+        target_kind="function",
+        target_name="crop_irr.fn_semantic_schedule_by_field",
+        params_model=IrrigationScheduleParams,
+        result_row_model=IrrigationRow,
+        required_permission="crop.irrigation.read",
         max_rows=500,
     ),
 ]

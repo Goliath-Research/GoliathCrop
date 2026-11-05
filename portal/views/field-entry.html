@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Crop · Field entry</title>
+    <link rel="stylesheet" href="../static/crop-shell.css" />
+  </head>
+  <body>
+    <h1>Field entry</h1>
+    <p class="crop-muted">Phone-friendly quick forms for operations and scouting.</p>
+
+    <div class="crop-card">
+      <h2>Log operation</h2>
+      <form id="opForm" class="crop-form-grid">
+        <label>
+          Planting ID
+          <input name="planting_id" type="number" required value="100" />
+        </label>
+        <label>
+          Kind
+          <select name="kind">
+            <option>irrigation</option>
+            <option>fertilization</option>
+            <option>spraying</option>
+            <option>harvest</option>
+          </select>
+        </label>
+        <label>
+          Amount (mm or rate)
+          <input name="rate" type="number" step="0.1" placeholder="Optional" />
+        </label>
+        <label>
+          When
+          <input name="performed_on" type="datetime-local" required />
+        </label>
+        <label>
+          Operator
+          <input name="operator" type="text" placeholder="Name" />
+        </label>
+        <button class="primary" type="submit">Record operation</button>
+      </form>
+    </div>
+
+    <div class="crop-card">
+      <h2>Scouting pin</h2>
+      <form id="scoutForm" class="crop-form-grid">
+        <label>
+          Field ID
+          <input name="field_id" type="number" required value="10" />
+        </label>
+        <label>
+          Pest
+          <select name="pest_code">
+            <option value="aphids">Aphids</option>
+            <option value="rust">Leaf rust</option>
+            <option value="weed_pressure">Weed pressure</option>
+            <option value="other">Other</option>
+          </select>
+        </label>
+        <label>
+          Severity
+          <input name="severity" type="number" min="1" max="5" value="2" required />
+        </label>
+        <label>
+          Notes
+          <textarea name="notes" rows="2"></textarea>
+        </label>
+        <button type="button" id="useGps" class="primary">Capture GPS</button>
+        <input name="geo_json" type="hidden" />
+        <button class="primary" type="submit">Save scouting</button>
+      </form>
+    </div>
+
+    <p class="crop-status" id="status"></p>
+    <script src="../static/crop-api.js"></script>
+    <script>
+      const status = document.getElementById("status");
+      const opForm = document.getElementById("opForm");
+      const scoutForm = document.getElementById("scoutForm");
+
+      opForm.performed_on.value = new Date().toISOString().slice(0, 16);
+
+      document.getElementById("useGps").addEventListener("click", () => {
+        if (!navigator.geolocation) {
+          CropPortal.setStatus(status, "Geolocation not available", true);
+          return;
+        }
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            scoutForm.geo_json.value = JSON.stringify({
+              type: "Point",
+              coordinates: [pos.coords.longitude, pos.coords.latitude],
+            });
+            CropPortal.setStatus(status, "GPS ready");
+          },
+          (err) => CropPortal.setStatus(status, err.message, true),
+          { enableHighAccuracy: true, timeout: 15000 }
+        );
+      });
+
+      opForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const data = new FormData(opForm);
+        const performed = new Date(String(data.get("performed_on")));
+        try {
+          await CropPortal.runAction("crop.operation.record", {
+            planting_id: Number(data.get("planting_id")),
+            kind: String(data.get("kind")),
+            performed_on: performed.toISOString(),
+            rate: data.get("rate") ? Number(data.get("rate")) : null,
+            rate_unit: data.get("rate") ? "mm" : null,
+            operator: String(data.get("operator") || ""),
+          });
+          CropPortal.setStatus(status, "Operation recorded");
+        } catch (err) {
+          CropPortal.setStatus(status, err.message, true);
+        }
+      });
+
+      scoutForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const data = new FormData(scoutForm);
+        try {
+          await CropPortal.runAction("crop.scouting.record", {
+            field_id: Number(data.get("field_id")),
+            observed_at: new Date().toISOString(),
+            pest_code: String(data.get("pest_code")),
+            severity: Number(data.get("severity")),
+            notes: String(data.get("notes") || ""),
+            geo_json: String(data.get("geo_json") || "") || null,
+          });
+          CropPortal.setStatus(status, "Scouting saved");
+          scoutForm.notes.value = "";
+        } catch (err) {
+          CropPortal.setStatus(status, err.message, true);
+        }
+      });
+    </script>
+  </body>
+</html>

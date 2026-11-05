@@ -1,6 +1,6 @@
 # GoliathCrop semantic layer
 
-GoliathCrop is a **descendant application** on [GoliathApp](https://github.com/Goliath-Research/GoliathApp). Raw tables in `crop_core`, `crop_ops`, `crop_trial`, and `crop_obs` are internal; the portal, Exograph, and agents reach them only through registered semantic requests and typed `ActionSpec` actions.
+GoliathCrop is a **descendant application** on [GoliathApp](https://github.com/Goliath-Research/GoliathApp). Raw tables in `crop_core`, `crop_ops`, `crop_trial`, `crop_obs`, `crop_scout`, and `crop_irr` are internal; the portal, Exograph, and agents reach them only through registered semantic requests and typed `ActionSpec` actions.
 
 Platform background: [GoliathApp semantic layer](https://goliath-research.github.io/GoliathApp/semantic-layer/) and [semantic extensions](https://goliath-research.github.io/GoliathApp/semantic-extensions/).
 
@@ -15,13 +15,11 @@ Platform background: [GoliathApp semantic layer](https://goliath-research.github
 
 Apply order: GoliathApp `apply_schema.sh`, then `./scripts/apply_domain_schema.sh`, then semantic seed.
 
-## Entities (Phase 1 + Phase 2 weather)
+## Entities
 
-Entities and `storage_relation` views match [docs/plan.md](plan.md). Phase 2 adds `crop.weather` backed by `crop_obs.v_weather_daily`.
+Entities and `storage_relation` views match [docs/plan.md](plan.md). Phase 3 adds sensors, readings, and imagery scenes. Phase 4 adds `crop.scouting` and `crop.irrigation`.
 
-Sensor readings, samples, imagery, scouting, and yield entities remain planned for later phases.
-
-## Named requests (Phase 2 MVP)
+## Named requests (MVP + sensing + Phase 4)
 
 | Request | Function target |
 | --- | --- |
@@ -34,6 +32,11 @@ Sensor readings, samples, imagery, scouting, and yield entities remain planned f
 | `crop.weather.daily` | `crop_obs.fn_semantic_weather_daily` |
 | `crop.trial.list_by_season` | `crop_trial.fn_semantic_trial_list_by_season` |
 | `crop.trial.results` | `crop_trial.fn_trial_results` |
+| `crop.sensor.list_by_farm` | `crop_obs.fn_semantic_device_list` |
+| `crop.reading.window` | `crop_obs.fn_readings_window` |
+| `crop.scene.list_by_field` | `crop_img.fn_semantic_scene_list` |
+| `crop.scouting.list_by_field` | `crop_scout.fn_semantic_list_by_field` |
+| `crop.irrigation.schedule_by_field` | `crop_irr.fn_semantic_schedule_by_field` |
 
 Targets use `target_kind=function` because GoliathApp semantic runner v1 executes organization- and farm-scoped reads inside SQL (see `crop_core.fn_user_can_access_farm`).
 
@@ -46,20 +49,13 @@ Domain actions publish through the setuptools entry point:
 crop = "goliath_crop.actions.catalog:ACTIONS"
 ```
 
-Phase 2 ships:
-
-| Action | Exposure | Notes |
-| --- | --- | --- |
-| `crop.field.import_boundaries` | RBAC | Stub ingest until Phase 3 worker |
-| `crop.operation.record` | RBAC | Writes via `crop_ops.sp_record_operation` when libpq env is set |
-| `crop.weather.refresh` | HIDDEN | Open-Meteo worker; upserts `crop_obs.weather_daily` |
-| `crop.trial.record_observation` | RBAC | Plot measurements for research trials |
+Phase 4 adds `crop.scouting.record` (RBAC) and hidden worker action `crop.irrigation.schedule`. Earlier phases ship field import, operations, weather refresh, trials, sensors, imagery, and alerts — see `src/goliath_crop/actions/catalog.py`.
 
 Sync into `wf.workflow_action` with GoliathApp `seed_action_catalog.py --use-db` after installing this package.
 
 ## NavTree
 
-`database/schema/05_nav_crop.sql` registers the **Crop** menu and Phase 2 leaves (Farms & fields, Seasons & plantings, Operations, Inventory, Sensors & weather, Trials). Foundation GoliathApp nodes are never updated. Python helper: `goliath-crop-seed-nav`.
+`database/schema/05_nav_crop.sql` registers the **Crop** menu and leaves including Phase 4 **Scouting**, **Irrigation planner**, and **Field entry**. Foundation GoliathApp nodes are never updated. Python helper: `goliath-crop-seed-nav`.
 
 Portal FrameKey → view mapping: [`portal/frames.json`](../portal/frames.json).
 

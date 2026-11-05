@@ -9,6 +9,8 @@
 --   crop.weather.read
 --   crop.sensor.read
 --   crop.imagery.read, crop.imagery.write
+--   crop.scouting.read, crop.scouting.write
+--   crop.irrigation.read
 -- Planned crop roles (owner, agronomist, operator, viewer, researcher) and Role2Node
 -- grants are applied per organization scope after roles exist — see docs/plan.md NavTree.
 

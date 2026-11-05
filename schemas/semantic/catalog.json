@@ -353,6 +353,153 @@
       "schema_version": "1",
       "storage_relation": "crop_ops.v_input_lot"
     },
+    "crop.irrigation": {
+      "attributes": [
+        {
+          "code": "field_id",
+          "column_name": "field_id",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "integer",
+          "role": "filter"
+        },
+        {
+          "code": "schedule_date",
+          "column_name": "schedule_date",
+          "filterable_ops": [
+            "gte",
+            "lte"
+          ],
+          "json_type": "string",
+          "role": "attribute"
+        },
+        {
+          "code": "recommended_irrigation_mm",
+          "column_name": "recommended_irrigation_mm",
+          "filterable_ops": [],
+          "json_type": "number",
+          "role": "measure"
+        },
+        {
+          "code": "depletion_mm",
+          "column_name": "depletion_mm",
+          "filterable_ops": [],
+          "json_type": "number",
+          "role": "measure"
+        },
+        {
+          "code": "soil_moisture_pct",
+          "column_name": "soil_moisture_pct",
+          "filterable_ops": [],
+          "json_type": "number",
+          "role": "measure"
+        }
+      ],
+      "catalog_type_name": null,
+      "code": "irrigation",
+      "content_hash": "9a0cf8866ed637d3174aace83a32e3b117b76a336feb23b49afc1c5d7082d7c7",
+      "description": "FAO-56 water balance recommendation versus soil moisture and applied irrigation.",
+      "display_name": "Irrigation schedule",
+      "meta_class_id": null,
+      "meta_class_name": null,
+      "namespace": "crop",
+      "row_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "applied_irrigation_mm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Applied Irrigation Mm"
+          },
+          "computed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Computed At"
+          },
+          "depletion_mm": {
+            "title": "Depletion Mm",
+            "type": "number"
+          },
+          "etc_mm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Etc Mm"
+          },
+          "field_id": {
+            "title": "Field Id",
+            "type": "integer"
+          },
+          "precip_mm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Precip Mm"
+          },
+          "recommended_irrigation_mm": {
+            "title": "Recommended Irrigation Mm",
+            "type": "number"
+          },
+          "schedule_date": {
+            "format": "date",
+            "title": "Schedule Date",
+            "type": "string"
+          },
+          "soil_moisture_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Soil Moisture Pct"
+          }
+        },
+        "required": [
+          "field_id",
+          "schedule_date",
+          "depletion_mm",
+          "recommended_irrigation_mm"
+        ],
+        "title": "IrrigationRow",
+        "type": "object"
+      },
+      "row_type": "portal.crop_irrigation_row",
+      "schema_id": "goliath.semantic/crop/irrigation/1",
+      "schema_version": "1",
+      "storage_relation": "crop_irr.v_schedule"
+    },
     "crop.operation": {
       "attributes": [
         {
@@ -944,6 +1091,154 @@
       "schema_id": "goliath.semantic/crop/scene/1",
       "schema_version": "1",
       "storage_relation": "crop_img.v_scene"
+    },
+    "crop.scouting": {
+      "attributes": [
+        {
+          "code": "observation_id",
+          "column_name": "observation_id",
+          "filterable_ops": [],
+          "json_type": "integer",
+          "role": "key"
+        },
+        {
+          "code": "field_id",
+          "column_name": "field_id",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "integer",
+          "role": "filter"
+        },
+        {
+          "code": "observed_at",
+          "column_name": "observed_at",
+          "filterable_ops": [],
+          "json_type": "string",
+          "role": "attribute"
+        },
+        {
+          "code": "pest",
+          "column_name": "pest",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "string",
+          "role": "filter"
+        },
+        {
+          "code": "severity",
+          "column_name": "severity",
+          "filterable_ops": [
+            "gte",
+            "lte"
+          ],
+          "json_type": "integer",
+          "role": "measure"
+        },
+        {
+          "code": "photo_uri",
+          "column_name": "photo_uri",
+          "filterable_ops": [],
+          "json_type": "string",
+          "role": "attribute"
+        }
+      ],
+      "catalog_type_name": null,
+      "code": "scouting",
+      "content_hash": "0f880d59d3e23c2a2dc4afbe4bc866bfbd86d2c98e7f101b6bf04ba980437882",
+      "description": "Field scouting pin with pest, severity, optional photo and map location.",
+      "display_name": "Scouting observation",
+      "meta_class_id": null,
+      "meta_class_name": null,
+      "namespace": "crop",
+      "row_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "field_id": {
+            "title": "Field Id",
+            "type": "integer"
+          },
+          "geo_json": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Geo Json"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Notes"
+          },
+          "observation_id": {
+            "title": "Observation Id",
+            "type": "integer"
+          },
+          "observed_at": {
+            "format": "date-time",
+            "title": "Observed At",
+            "type": "string"
+          },
+          "pest": {
+            "title": "Pest",
+            "type": "string"
+          },
+          "pest_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Pest Name"
+          },
+          "photo_uri": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Photo Uri"
+          },
+          "severity": {
+            "title": "Severity",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "observation_id",
+          "field_id",
+          "observed_at",
+          "pest",
+          "severity"
+        ],
+        "title": "ScoutingRow",
+        "type": "object"
+      },
+      "row_type": "portal.crop_scouting_row",
+      "schema_id": "goliath.semantic/crop/scouting/1",
+      "schema_version": "1",
+      "storage_relation": "crop_scout.v_observation"
     },
     "crop.season": {
       "attributes": [
@@ -1838,6 +2133,152 @@
       "target_name": "crop_ops.fn_semantic_input_lot_list_by_farm",
       "version": "1"
     },
+    "crop.irrigation.schedule_by_field": {
+      "base_namespace": null,
+      "content_hash": "9bb10e8786bdbc924b228cf745bbb247d9923f727a1a21414588ceb29f42828f",
+      "entity_code": "irrigation",
+      "filter_template": null,
+      "max_rows": 500,
+      "namespace": "crop",
+      "params_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "field_id": {
+            "title": "Field Id",
+            "type": "integer"
+          },
+          "from": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "From"
+          },
+          "to": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "To"
+          }
+        },
+        "required": [
+          "field_id"
+        ],
+        "title": "IrrigationScheduleParams",
+        "type": "object"
+      },
+      "request_code": "crop.irrigation.schedule_by_field",
+      "required_permission": "crop.irrigation.read",
+      "result_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "applied_irrigation_mm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Applied Irrigation Mm"
+          },
+          "computed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Computed At"
+          },
+          "depletion_mm": {
+            "title": "Depletion Mm",
+            "type": "number"
+          },
+          "etc_mm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Etc Mm"
+          },
+          "field_id": {
+            "title": "Field Id",
+            "type": "integer"
+          },
+          "precip_mm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Precip Mm"
+          },
+          "recommended_irrigation_mm": {
+            "title": "Recommended Irrigation Mm",
+            "type": "number"
+          },
+          "schedule_date": {
+            "format": "date",
+            "title": "Schedule Date",
+            "type": "string"
+          },
+          "soil_moisture_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Soil Moisture Pct"
+          }
+        },
+        "required": [
+          "field_id",
+          "schedule_date",
+          "depletion_mm",
+          "recommended_irrigation_mm"
+        ],
+        "title": "IrrigationRow",
+        "type": "object"
+      },
+      "row_type": "portal.crop_irrigation_row",
+      "schema_id": "goliath.semantic/crop/crop.irrigation.schedule_by_field/1",
+      "target_kind": "function",
+      "target_name": "crop_irr.fn_semantic_schedule_by_field",
+      "version": "1"
+    },
     "crop.operation.list": {
       "base_namespace": null,
       "content_hash": "58ab5406ae24fb6a63d9371239bb0a2cad36bc46eb08b9983eff833c44532bd1",
@@ -2312,6 +2753,144 @@
       "schema_id": "goliath.semantic/crop/crop.scene.list_by_field/1",
       "target_kind": "function",
       "target_name": "crop_img.fn_semantic_scene_list",
+      "version": "1"
+    },
+    "crop.scouting.list_by_field": {
+      "base_namespace": null,
+      "content_hash": "79f28e60fa872eba15df63441f04e07f85fddc880ba8c6c541bb5f3ea8cf0700",
+      "entity_code": "scouting",
+      "filter_template": null,
+      "max_rows": 500,
+      "namespace": "crop",
+      "params_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "field_id": {
+            "title": "Field Id",
+            "type": "integer"
+          },
+          "from": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "From"
+          },
+          "to": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "To"
+          }
+        },
+        "required": [
+          "field_id"
+        ],
+        "title": "ScoutingListParams",
+        "type": "object"
+      },
+      "request_code": "crop.scouting.list_by_field",
+      "required_permission": "crop.scouting.read",
+      "result_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "field_id": {
+            "title": "Field Id",
+            "type": "integer"
+          },
+          "geo_json": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Geo Json"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Notes"
+          },
+          "observation_id": {
+            "title": "Observation Id",
+            "type": "integer"
+          },
+          "observed_at": {
+            "format": "date-time",
+            "title": "Observed At",
+            "type": "string"
+          },
+          "pest": {
+            "title": "Pest",
+            "type": "string"
+          },
+          "pest_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Pest Name"
+          },
+          "photo_uri": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Photo Uri"
+          },
+          "severity": {
+            "title": "Severity",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "observation_id",
+          "field_id",
+          "observed_at",
+          "pest",
+          "severity"
+        ],
+        "title": "ScoutingRow",
+        "type": "object"
+      },
+      "row_type": "portal.crop_scouting_row",
+      "schema_id": "goliath.semantic/crop/crop.scouting.list_by_field/1",
+      "target_kind": "function",
+      "target_name": "crop_scout.fn_semantic_list_by_field",
       "version": "1"
     },
     "crop.season.list_by_farm": {

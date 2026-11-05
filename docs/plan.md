@@ -1,6 +1,6 @@
 # GoliathCrop — Crop Management plan
 
-Status: in development (Phase 2 MVP: portal views, weather worker, extended semantic reads).
+Status: in development (Phase 4: irrigation scheduling, scouting, phone field forms; Phase 3 sensing landed on main).
 
 ## Vision and users
 
@@ -67,6 +67,8 @@ Raw tables are an internal detail. Users, the portal, and agents see **GoliathCr
 | `crop.scene.list_by_field` | `crop.scene` | field_id, from?, to? | `crop.imagery.read` | view |
 | `crop.yield.by_season` | `crop.yield` | season_id | `crop.yield.read` | view |
 | `crop.trial.results` | `crop.trial` | trial_id | `crop.trial.read` | function `crop_trial.fn_trial_results` |
+| `crop.scouting.list_by_field` | `crop.scouting` | field_id, from?, to? | `crop.scouting.read` | function `crop_scout.fn_semantic_list_by_field` |
+| `crop.irrigation.schedule_by_field` | `crop.irrigation` | field_id, from?, to? | `crop.irrigation.read` | function `crop_irr.fn_semantic_schedule_by_field` |
 
 ### Example entity spec
 
@@ -118,6 +120,8 @@ Business operations are typed `ActionSpec` rows (`goliath_app.actions.spec`), pu
 | `crop.scene.fetch_and_index` | domain | `crop.scene` | RBAC | `crop.imagery.write` | `crop.imagery` |
 | `crop.yield.predict` | domain | `crop.yield` | RBAC | `crop.yield.write` | `crop.model` |
 | `crop.trial.analyze` | domain | `crop.trial` | RBAC | `crop.trial.write` | `crop.model` |
+| `crop.scouting.record` | domain | `crop.scouting` | RBAC | `crop.scouting.write` | `crop.ops` |
+| `crop.irrigation.schedule` | domain | `crop.irrigation` | HIDDEN | — | `crop.irrigation` |
 
 ### Example ActionSpec
 
@@ -161,6 +165,9 @@ GoliathCrop **adds** nodes to `portal."NavTree"` with `portal.sp_nav_register_no
 | Crop › Soil & tissue samples | `crop.sample.list_by_field`; action `crop.sample.import_lab_results` | owner, agronomist |
 | Crop › Imagery | `crop.scene.list_by_field`; action `crop.scene.fetch_and_index` | owner, agronomist |
 | Crop › Yield | `crop.yield.by_season`; action `crop.yield.predict` | owner, agronomist |
+| Crop › Scouting | `crop.scouting.list_by_field`; action `crop.scouting.record` | owner, agronomist, operator |
+| Crop › Irrigation planner | `crop.irrigation.schedule_by_field` | owner, agronomist, operator |
+| Crop › Field entry | phone web forms (`crop.field.entry`) | owner, agronomist, operator |
 | Crop › Trials | `crop.trial.results`; action `crop.trial.analyze` | owner, researcher |
 
 Role2Node rows are scoped per organization (`ScopeId`); the release seeder inserts them idempotently after the nodes exist. Foundation menus remain exactly as GoliathApp ships them.
@@ -256,7 +263,7 @@ flowchart LR
 - **Phase 1 — Core data:** `crop_core`, `crop_ops`, `crop_trial` schemas on PostGIS + TimescaleDB, semantic registry + action catalog, RLS, field/plot import (GeoJSON/shapefile).
 - **Phase 2 — MVP (farm + research station):** farm map, field detail, operations log, inventory, trials (plots, treatments, replicates, observations); phone-usable web forms; Open-Meteo/NOAA weather worker; GoliathApp auth; $0 paid APIs; CPU workers.
 - **Phase 3 — Sensing:** sensor ingest into hypertables with wake, Sentinel-2/Landsat NDVI to COGs, drone upload processing, alerts.
-- **Phase 4 — Decisions and field app:** irrigation scheduling (FAO-56 water balance), scouting, offline/mobile field entry.
+- **Phase 4 — Decisions and field app:** irrigation scheduling (FAO-56 water balance), scouting, phone-usable web field forms (offline native app after MVP). **In progress / landing on main.**
 - **Phase 5 — ML and ecosystem:** yield prediction on on-demand RunPod GPUs, GoliathOmics/GroundStation links, ISOBUS/ADAPT, paid providers and auth upgrade if needed.
 
 ## Decisions

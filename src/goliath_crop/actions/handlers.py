@@ -26,10 +26,15 @@ from goliath_crop.actions.models import (
     TrialRecordObservationOutput,
     WeatherRefreshInput,
     WeatherRefreshOutput,
+    ScoutingRecordInput,
+    ScoutingRecordOutput,
+    IrrigationScheduleInput,
+    IrrigationScheduleOutput,
 )
 from goliath_crop.db import connect, libpq_configured, user_id_from_context
 from goliath_crop.workers.alerts import evaluate_alert
 from goliath_crop.workers.imagery_process import process_scene, register_drone_upload
+from goliath_crop.workers.irrigation_schedule import run_irrigation_schedule
 from goliath_crop.workers.satellite_fetch import fetch_scenes_for_field
 from goliath_crop.workers.sensor_ingest import ingest_sensor_batch, run_sensor_qc
 from goliath_crop.workers.weather_sync import refresh_weather
@@ -235,3 +240,66 @@ def handle_alert_evaluate(
         return AlertEvaluateOutput(alert_id=model.alert_id, status="skipped").model_dump(mode="json")
     result = evaluate_alert(alert_id=model.alert_id)
     return AlertEvaluateOutput(alert_id=result.alert_id, status=result.status).model_dump(mode="json")
+
+
+def handle_scouting_record(
+    payload: dict[str, Any],
+    *,
+    context: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    model = ScoutingRecordInput.model_validate(payload)
+    user_id = user_id_from_context(context)
+    if user_id is None or not libpq_configured():
+        raise RuntimeError("scouting record requires authenticated user and database configuration")
+    with connect() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT crop_scout.sp_record_observation(
+                  %s, %s, %s, %s, %s, %s, %s, %s
+                )
+                """,
+                (
+                    user_id,
+                    model.field_id,
+                    model.observed_at,
+                    model.pest_code,
+                    model.severity,
+                    model.notes,
+                    model.geo_json,
+                    model.photo_uri,
+                ),
+            )
+            row = cur.fetchone()
+            if row is None:
+                raise RuntimeError("sp_record_observation returned no row")
+            observation_id = int(row[0])
+        conn.commit()
+    return ScoutingRecordOutput(observation_id=observation_id).model_dump(mode="json")
+
+
+def handle_irrigation_schedule(
+    payload: dict[str, Any],
+    *,
+    context: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    model = IrrigationScheduleInput.model_validate(payload)
+    _ = context
+    if not libpq_configured():
+        today = date.today()
+        return IrrigationScheduleOutput(
+            field_id=model.field_id,
+            balance_date=model.balance_date or today,
+            recommended_irrigation_mm=0.0,
+            depletion_mm=0.0,
+        ).model_dump(mode="json")
+    result = run_irrigation_schedule(
+        field_id=model.field_id,
+        balance_date=model.balance_date,
+    )
+    return IrrigationScheduleOutput(
+        field_id=result.field_id,
+        balance_date=result.balance_date,
+        recommended_irrigation_mm=result.recommended_irrigation_mm,
+        depletion_mm=result.depletion_mm,
+    ).model_dump(mode="json")

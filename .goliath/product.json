@@ -3,7 +3,7 @@
   "id": "goliathcrop",
   "name": "GoliathCrop",
   "tagline": "Crop management on GoliathApp: fields, operations, sensors, imagery, and research trials.",
-  "description": "GoliathCrop specializes GoliathApp for commercial farms and research stations. Phase 3 sensing adds sensor hypertables with dual-activation wakes, Element84 STAC imagery, drone COG processing, and threshold alerts. Phase 2 MVP added portal views, weather worker, and trials; Phase 1 landed PostGIS core schemas and semantic namespace.",
+  "description": "GoliathCrop specializes GoliathApp for commercial farms and research stations. Phase 4 adds FAO-56 irrigation scheduling, scouting observations, and phone-usable field entry forms. Phase 3 sensing adds sensor hypertables with dual-activation wakes, Element84 STAC imagery, drone COG processing, and threshold alerts.",
   "category": "application",
   "features": [
     {
@@ -19,8 +19,12 @@
       "description": "Plots, treatments, replicates, and observations for research stations alongside commercial farm records."
     },
     {
+      "title": "Irrigation and scouting",
+      "description": "FAO-56 irrigation recommendations from weather and soil moisture, scouting pins with severity and photos, and phone-friendly field entry forms."
+    },
+    {
       "title": "DomainPrograms with dual activation",
-      "description": "Backlog work is claimed through goliath-gateway; event-triggered work (new imagery, readings, thresholds) wakes workers via Postgres pub/sub."
+      "description": "Backlog work is claimed through goliath-gateway; event-triggered work (weather, moisture, imagery, thresholds) wakes workers via Postgres pub/sub."
     }
   ],
   "links": {

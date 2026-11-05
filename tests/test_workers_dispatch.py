@@ -19,10 +19,17 @@ def test_sensor_qc_without_db() -> None:
     assert out["alerts_opened"] == 0
 
 
+def test_irrigation_schedule_without_db() -> None:
+    out = handle("crop.irrigation.schedule", {"field_id": 10})
+    assert out["field_id"] == 10
+    assert out["recommended_irrigation_mm"] == 0.0
+
+
 def test_capability_mapping() -> None:
     assert capability_for_action("crop.weather.refresh") == "crop.weather"
     assert capability_for_action("crop.sensor.ingest_batch") == "crop.ingest"
     assert capability_for_action("crop.alert.evaluate") == "crop.alerts"
+    assert capability_for_action("crop.irrigation.schedule") == "crop.irrigation"
 
 
 def test_dispatch_unknown_action_raises() -> None:

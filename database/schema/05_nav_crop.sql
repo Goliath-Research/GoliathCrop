@@ -80,6 +80,15 @@ BEGIN
     v_root_id, 'Imagery', 39, 'crop_imagery', 'crop.scene.list_by_field'
   );
   PERFORM crop_core.sp_register_crop_nav_child(
+    v_root_id, 'Irrigation planner', 41, 'crop_irrigation', 'crop.irrigation.schedule_by_field'
+  );
+  PERFORM crop_core.sp_register_crop_nav_child(
+    v_root_id, 'Scouting', 42, 'crop_scouting', 'crop.scouting.list_by_field'
+  );
+  PERFORM crop_core.sp_register_crop_nav_child(
+    v_root_id, 'Field entry', 45, 'crop_field_entry', 'crop.operation.list'
+  );
+  PERFORM crop_core.sp_register_crop_nav_child(
     v_root_id, 'Trials', 40, 'crop_trials', 'crop.trial.list_by_season'
   );
 END;
