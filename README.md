@@ -2,7 +2,7 @@
 
 GoliathApp specialization for crop management: farms, fields and plots, operations, inputs, sensors, weather, satellite and drone imagery, and research trials. Initial targets are a commercial farm and a research station.
 
-Status: **in development** — Phase 2 MVP adds mobile portal domain views, `crop_obs` weather storage, Open-Meteo worker, and extended semantic reads/actions on top of Phase 1 core data.
+Status: **in development** — Phase 3 sensing adds TimescaleDB sensor ingest with Postgres wakes, imagery scenes and COG paths, STAC fetch, drone upload processing, and frost/stress/pest alerts on top of Phase 2 MVP.
 
 ## Layout
 

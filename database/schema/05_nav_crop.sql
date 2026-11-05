@@ -74,7 +74,10 @@ BEGIN
     v_root_id, 'Inventory', 35, 'crop_inventory', 'crop.input_lot.list_by_farm'
   );
   PERFORM crop_core.sp_register_crop_nav_child(
-    v_root_id, 'Sensors & weather', 38, 'crop_weather', 'crop.weather.daily'
+    v_root_id, 'Sensors & weather', 38, 'crop_sensors_weather', 'crop.reading.window'
+  );
+  PERFORM crop_core.sp_register_crop_nav_child(
+    v_root_id, 'Imagery', 39, 'crop_imagery', 'crop.scene.list_by_field'
   );
   PERFORM crop_core.sp_register_crop_nav_child(
     v_root_id, 'Trials', 40, 'crop_trials', 'crop.trial.list_by_season'

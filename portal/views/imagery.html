@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Crop · Imagery</title>
+    <link rel="stylesheet" href="../static/crop-shell.css" />
+  </head>
+  <body>
+    <h1>Imagery</h1>
+    <div class="crop-toolbar">
+      <label>
+        Field ID
+        <input id="fieldId" type="number" value="10" />
+      </label>
+      <button type="button" id="reload">Load scenes</button>
+    </div>
+    <ul class="crop-list" id="sceneList"></ul>
+    <p class="crop-muted">
+      Satellite scenes from Element84 STAC (`crop.scene.fetch_and_index`). Drone orthomosaics register via
+      `crop.drone.upload` and NDVI COGs via `crop.imagery.process`.
+    </p>
+    <p class="crop-status" id="status"></p>
+    <script src="../static/crop-api.js"></script>
+    <script>
+      const status = document.getElementById("status");
+      async function load() {
+        const fieldId = Number(document.getElementById("fieldId").value || 10);
+        const rows = await CropPortal.runSemanticRequest("crop.scene.list_by_field", { field_id: fieldId });
+        document.getElementById("sceneList").innerHTML = rows
+          .map(
+            (row) =>
+              `<li>${row.acquired_at} · ${row.source} · NDVI ${row.ndvi_mean ?? "—"} · ${row.cog_uri ?? "pending"}</li>`
+          )
+          .join("");
+        CropPortal.setStatus(status, `${rows.length} scene(s)`);
+      }
+      document.getElementById("reload").addEventListener("click", () => load().catch((e) => CropPortal.setStatus(status, e.message, true)));
+      load().catch((e) => CropPortal.setStatus(status, e.message, true));
+    </script>
+  </body>
+</html>

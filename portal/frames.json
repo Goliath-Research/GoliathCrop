@@ -8,7 +8,9 @@
     "crop.planting.list_by_season": { "view": "views/seasons.html", "title": "Seasons & plantings" },
     "crop.operation.list": { "view": "views/operations.html", "title": "Operations" },
     "crop.input_lot.list_by_farm": { "view": "views/inventory.html", "title": "Inventory" },
-    "crop.weather.daily": { "view": "views/weather.html", "title": "Sensors & weather" },
+    "crop.reading.window": { "view": "views/sensors.html", "title": "Sensors & weather" },
+    "crop.weather.daily": { "view": "views/sensors.html", "title": "Sensors & weather" },
+    "crop.scene.list_by_field": { "view": "views/imagery.html", "title": "Imagery" },
     "crop.trial.list_by_season": { "view": "views/trials.html", "title": "Trials" },
     "crop.trial.results": { "view": "views/trial-results.html", "title": "Trial results" }
   }

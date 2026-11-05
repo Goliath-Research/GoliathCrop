@@ -24,7 +24,8 @@ NAV_SPEC = (
     ("Seasons & plantings", "Crop", 20, "crop_seasons", "crop.planting.list_by_season"),
     ("Operations", "Crop", 30, "crop_operations", "crop.operation.list"),
     ("Inventory", "Crop", 35, "crop_inventory", "crop.input_lot.list_by_farm"),
-    ("Sensors & weather", "Crop", 38, "crop_weather", "crop.weather.daily"),
+    ("Sensors & weather", "Crop", 38, "crop_sensors_weather", "crop.reading.window"),
+    ("Imagery", "Crop", 39, "crop_imagery", "crop.scene.list_by_field"),
     ("Trials", "Crop", 40, "crop_trials", "crop.trial.list_by_season"),
 )
 
