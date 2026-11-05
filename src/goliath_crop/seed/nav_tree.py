@@ -38,7 +38,16 @@ def _ensure_node_info(cur, name: str, frame_key: str) -> int:
     )
     row = cur.fetchone()
     if row:
-        return int(row[0])
+        info_id = int(row[0])
+        cur.execute(
+            """
+            UPDATE portal."NodeInfos"
+            SET "FrameKey" = %s
+            WHERE "Id" = %s AND "FrameKey" IS DISTINCT FROM %s
+            """,
+            (frame_key, info_id, frame_key),
+        )
+        return info_id
     cur.execute(
         """
         INSERT INTO portal."NodeInfos" ("Name", "Singleton", "TypeId", "FrameKey")
@@ -77,11 +86,11 @@ def seed(conn) -> int:
     with conn.cursor() as cur:
         for caption, parent_caption, seq, info_name, frame_key in NAV_SPEC:
             parent_id = node_ids.get(parent_caption) if parent_caption else None
+            info_id = _ensure_node_info(cur, info_name, frame_key or info_name)
             existing = _find_node(cur, caption, parent_id)
             if existing is not None:
                 node_ids[caption] = existing
                 continue
-            info_id = _ensure_node_info(cur, info_name, frame_key or info_name)
             cur.execute(
                 """
                 SELECT node_id FROM portal.sp_nav_register_node(%s, %s, %s::smallint, %s)

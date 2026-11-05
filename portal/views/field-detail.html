@@ -66,9 +66,19 @@
               .join("")
           : "<li class='crop-muted'>No operations logged.</li>";
 
-        const weather = await CropPortal.runSemanticRequest("crop.weather.daily", { field_id: fieldId });
+        const toDate = new Date();
+        const fromDate = new Date(toDate);
+        fromDate.setUTCDate(fromDate.getUTCDate() - 6);
+        const toIso = toDate.toISOString().slice(0, 10);
+        const fromIso = fromDate.toISOString().slice(0, 10);
+        const weather = await CropPortal.runSemanticRequest("crop.weather.daily", {
+          field_id: fieldId,
+          from: fromIso,
+          to: toIso,
+        });
         document.getElementById("weatherList").innerHTML = weather.length
           ? weather
+              .slice(0, 7)
               .map(
                 (row) =>
                   `<li>${row.date}: ${row.tmin ?? "—"} / ${row.tmax ?? "—"} °C · GDD ${row.gdd ?? "—"}</li>`

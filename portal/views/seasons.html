@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Crop · Seasons &amp; plantings</title>
+    <link rel="stylesheet" href="../static/crop-shell.css" />
+  </head>
+  <body>
+    <h1>Seasons &amp; plantings</h1>
+    <div class="crop-toolbar">
+      <label>
+        Farm ID
+        <input id="farmId" type="number" value="1" />
+      </label>
+      <button type="button" id="reload">Reload</button>
+    </div>
+    <ul class="crop-list" id="seasonList"></ul>
+    <div class="crop-card">
+      <h2>Plantings</h2>
+      <ul class="crop-list" id="plantingList"></ul>
+    </div>
+    <p class="crop-status" id="status"></p>
+    <script src="../static/crop-api.js"></script>
+    <script>
+      const status = document.getElementById("status");
+      let activeSeasonId = null;
+
+      async function loadPlantings(seasonId) {
+        activeSeasonId = seasonId;
+        const rows = await CropPortal.runSemanticRequest("crop.planting.list_by_season", { season_id: seasonId });
+        document.getElementById("plantingList").innerHTML = rows.length
+          ? rows
+              .map(
+                (p) =>
+                  `<li>Field ${p.field_id} · planting ${p.planting_id}<div class="crop-muted">Sown ${p.sown_on || "—"} · ${p.density ?? "—"} seeds/ha</div></li>`
+              )
+              .join("")
+          : "<li class='crop-muted'>No plantings for this season.</li>";
+        CropPortal.setStatus(status, `Season ${seasonId}: ${rows.length} planting(s)`);
+      }
+
+      async function load() {
+        const farmId = Number(document.getElementById("farmId").value || 1);
+        const seasons = await CropPortal.runSemanticRequest("crop.season.list_by_farm", { farm_id: farmId });
+        document.getElementById("seasonList").innerHTML = seasons.length
+          ? seasons
+              .map(
+                (s) =>
+                  `<li><button type="button" data-season="${s.season_id}"><strong>${s.year}</strong> ${s.campaign || ""}</button><div class="crop-muted">${s.status || "planned"}</div></li>`
+              )
+              .join("")
+          : "<li class='crop-muted'>No seasons for this farm.</li>";
+        document.querySelectorAll("[data-season]").forEach((btn) =>
+          btn.addEventListener("click", () =>
+            loadPlantings(Number(btn.getAttribute("data-season"))).catch((e) =>
+              CropPortal.setStatus(status, e.message, true)
+            )
+          )
+        );
+        if (seasons[0]) {
+          await loadPlantings(seasons[0].season_id);
+        } else {
+          document.getElementById("plantingList").innerHTML = "";
+        }
+      }
+
+      document.getElementById("reload").addEventListener("click", () =>
+        load().catch((e) => CropPortal.setStatus(status, e.message, true))
+      );
+      load().catch((e) => CropPortal.setStatus(status, e.message, true));
+    </script>
+  </body>
+</html>

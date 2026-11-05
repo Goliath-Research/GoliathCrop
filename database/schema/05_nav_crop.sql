@@ -19,6 +19,10 @@ BEGIN
     INSERT INTO portal."NodeInfos" ("Name", "Singleton", "TypeId", "FrameKey")
     VALUES (p_info_name, true, 1, p_frame_key)
     RETURNING "Id" INTO v_info;
+  ELSE
+    UPDATE portal."NodeInfos"
+    SET "FrameKey" = p_frame_key
+    WHERE "Id" = v_info AND "FrameKey" IS DISTINCT FROM p_frame_key;
   END IF;
 
   SELECT n."ID" INTO v_exists

@@ -41,7 +41,7 @@ def handle_operation_record(
     model = OperationRecordInput.model_validate(payload)
     user_id = user_id_from_context(context)
     if user_id is None or not libpq_configured():
-        return OperationRecordOutput(operation_id=0).model_dump(mode="json")
+        raise RuntimeError("operation record requires authenticated user and database configuration")
     with connect() as conn:
         with conn.cursor() as cur:
             cur.execute(
@@ -99,7 +99,7 @@ def handle_trial_record_observation(
     user_id = user_id_from_context(context)
     measured_on: date | None = model.measured_on
     if user_id is None or not libpq_configured():
-        return TrialRecordObservationOutput(measurement_id=0).model_dump(mode="json")
+        raise RuntimeError("trial observation requires authenticated user and database configuration")
     with connect() as conn:
         with conn.cursor() as cur:
             cur.execute(

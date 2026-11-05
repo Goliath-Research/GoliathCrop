@@ -54,7 +54,8 @@ def refresh_weather(
                 )
                 field_rows = cur.fetchall()
 
-            for (fid,) in field_rows:
+        for (fid,) in field_rows:
+            with conn.cursor() as cur:
                 cur.execute(
                     """
                     SELECT latitude, longitude
@@ -77,15 +78,16 @@ def refresh_weather(
                 )
                 tz_row = cur.fetchone()
                 timezone = tz_row[0] if tz_row else "UTC"
-                observations = fetch_open_meteo_daily(
-                    latitude,
-                    longitude,
-                    start=start,
-                    end=end,
-                    timezone=str(timezone),
-                )
-                if not observations:
-                    continue
+            observations = fetch_open_meteo_daily(
+                latitude,
+                longitude,
+                start=start,
+                end=end,
+                timezone=str(timezone),
+            )
+            if not observations:
+                continue
+            with conn.cursor() as cur:
                 fields_refreshed += 1
                 for obs in observations:
                     gdd, et0 = observation_with_gdd(obs)
@@ -107,5 +109,5 @@ def refresh_weather(
                         ),
                     )
                     rows_upserted += 1
-        conn.commit()
+            conn.commit()
     return WeatherSyncResult(fields_refreshed=fields_refreshed, rows_upserted=rows_upserted)
