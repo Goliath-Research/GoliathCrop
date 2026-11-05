@@ -2,7 +2,7 @@
 
 GoliathApp specialization for crop management: farms, fields and plots, operations, inputs, sensors, weather, satellite and drone imagery, and research trials. Initial targets are a commercial farm and a research station.
 
-Status: **in development** — Phase 1 (core data) lands the Python package, PostGIS schemas (`crop_core`, `crop_ops`, `crop_trial`), semantic registry, ActionSpec catalog, and NavTree seeder.
+Status: **in development** — Phase 2 MVP adds mobile portal domain views, `crop_obs` weather storage, Open-Meteo worker, and extended semantic reads/actions on top of Phase 1 core data.
 
 ## Layout
 
@@ -12,7 +12,9 @@ Status: **in development** — Phase 1 (core data) lands the Python package, Pos
 | [`docs/semantic-layer.md`](docs/semantic-layer.md) | Semantic namespace `crop`, export/seed, Phase 1 requests |
 | [`src/goliath_crop/`](src/goliath_crop/) | Python package (semantic specs, actions, seed helpers) |
 | [`database/schema/`](database/schema/) | Ordered SQL apply scripts (PostGIS + views + semantic functions) |
+| [`portal/`](portal/) | Mobile-first domain views and FrameKey registry for the GoliathApp portal shell |
 | [`scripts/apply_domain_schema.sh`](scripts/apply_domain_schema.sh) | Idempotent domain DDL apply (after GoliathApp platform schema) |
+| [`domain_programs/`](domain_programs/) | DomainProgram notes (weather sync worker) |
 | [`.goliath/product.json`](.goliath/product.json) | GoliathWeb catalog entry |
 
 ## Quick start (developers)

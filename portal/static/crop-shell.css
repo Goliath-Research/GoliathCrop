@@ -1,0 +1,137 @@
+:root {
+  color-scheme: light dark;
+  --crop-bg: #0f1410;
+  --crop-surface: #1a221c;
+  --crop-accent: #6fbf4a;
+  --crop-text: #eef2ea;
+  --crop-muted: #9aa894;
+  --crop-border: #2c382f;
+  --crop-danger: #e07070;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--crop-bg);
+  color: var(--crop-text);
+  line-height: 1.45;
+  padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
+    max(16px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+}
+
+h1 {
+  font-size: 1.25rem;
+  margin: 0 0 12px;
+}
+
+.crop-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.crop-toolbar label {
+  font-size: 0.75rem;
+  color: var(--crop-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1 1 140px;
+}
+
+select,
+input,
+textarea,
+button {
+  font: inherit;
+  min-height: 44px;
+  border-radius: 10px;
+  border: 1px solid var(--crop-border);
+  background: var(--crop-surface);
+  color: var(--crop-text);
+  padding: 8px 12px;
+}
+
+button.primary {
+  background: var(--crop-accent);
+  color: #102008;
+  border: none;
+  font-weight: 600;
+  width: 100%;
+}
+
+.crop-card {
+  background: var(--crop-surface);
+  border: 1px solid var(--crop-border);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+
+.crop-card h2 {
+  font-size: 1rem;
+  margin: 0 0 6px;
+}
+
+.crop-muted {
+  color: var(--crop-muted);
+  font-size: 0.85rem;
+}
+
+.crop-map {
+  height: 220px;
+  border-radius: 12px;
+  border: 1px dashed var(--crop-border);
+  display: grid;
+  place-items: center;
+  color: var(--crop-muted);
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.crop-map svg {
+  width: 100%;
+  height: 100%;
+}
+
+.crop-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.crop-list li {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--crop-border);
+}
+
+.crop-list li:last-child {
+  border-bottom: none;
+}
+
+.crop-status {
+  font-size: 0.8rem;
+  color: var(--crop-muted);
+  margin-top: 8px;
+}
+
+.crop-status.error {
+  color: var(--crop-danger);
+}
+
+.crop-form-grid {
+  display: grid;
+  gap: 10px;
+}
+
+@media (min-width: 640px) {
+  body {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+}

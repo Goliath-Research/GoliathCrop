@@ -19,11 +19,13 @@ def _connect():
 
 
 NAV_SPEC = (
-    ("Crop", None, 20, "crop_root", None),
+    ("Crop", None, 20, "crop_root", "crop"),
     ("Farms & fields", "Crop", 10, "crop_farms_fields", "crop.field.list_by_farm"),
     ("Seasons & plantings", "Crop", 20, "crop_seasons", "crop.planting.list_by_season"),
     ("Operations", "Crop", 30, "crop_operations", "crop.operation.list"),
-    ("Trials", "Crop", 40, "crop_trials", "crop.trial.results"),
+    ("Inventory", "Crop", 35, "crop_inventory", "crop.input_lot.list_by_farm"),
+    ("Sensors & weather", "Crop", 38, "crop_weather", "crop.weather.daily"),
+    ("Trials", "Crop", 40, "crop_trials", "crop.trial.list_by_season"),
 )
 
 

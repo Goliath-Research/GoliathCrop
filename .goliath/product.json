@@ -3,7 +3,7 @@
   "id": "goliathcrop",
   "name": "GoliathCrop",
   "tagline": "Crop management on GoliathApp: fields, operations, sensors, imagery, and research trials.",
-  "description": "GoliathCrop specializes GoliathApp for commercial farms and research stations. Phase 1 adds PostGIS core schemas (crop_core, crop_ops, crop_trial), the crop semantic namespace, domain ActionSpec catalog, and NavTree extension. Later phases add sensing, imagery, and decision workers.",
+  "description": "GoliathCrop specializes GoliathApp for commercial farms and research stations. Phase 2 MVP adds mobile portal domain views, crop_obs weather storage, Open-Meteo worker, and extended semantic reads/actions. Phase 1 landed PostGIS core schemas, semantic namespace, and NavTree extension.",
   "category": "application",
   "features": [
     {

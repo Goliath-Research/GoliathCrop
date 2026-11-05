@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Crop · Field detail</title>
+    <link rel="stylesheet" href="../static/crop-shell.css" />
+  </head>
+  <body>
+    <h1>Field detail</h1>
+    <div class="crop-card">
+      <h2 id="fieldTitle">Field</h2>
+      <p class="crop-muted" id="fieldMeta"></p>
+    </div>
+    <div class="crop-card">
+      <h2>Season timeline</h2>
+      <ul class="crop-list" id="seasonList"></ul>
+    </div>
+    <div class="crop-card">
+      <h2>Recent operations</h2>
+      <ul class="crop-list" id="operationList"></ul>
+    </div>
+    <div class="crop-card">
+      <h2>Weather (7 days)</h2>
+      <ul class="crop-list" id="weatherList"></ul>
+    </div>
+    <p class="crop-status" id="status"></p>
+    <script src="../static/crop-api.js"></script>
+    <script>
+      const status = document.getElementById("status");
+      const farmId = Number(CropPortal.queryParam("farm_id") || 1);
+      const fieldId = Number(CropPortal.queryParam("field_id") || 10);
+
+      async function init() {
+        const fields = await CropPortal.runSemanticRequest("crop.field.list_by_farm", { farm_id: farmId });
+        const field = fields.find((row) => row.field_id === fieldId) || fields[0];
+        document.getElementById("fieldTitle").textContent = field ? field.name : `Field ${fieldId}`;
+        document.getElementById("fieldMeta").textContent = field
+          ? `${field.area_ha ?? "—"} ha · ${field.soil_type ?? "soil n/a"}`
+          : "";
+
+        const seasons = await CropPortal.runSemanticRequest("crop.season.list_by_farm", { farm_id: farmId });
+        document.getElementById("seasonList").innerHTML = seasons
+          .map((s) => `<li>${s.year} ${s.campaign || ""} · ${s.status || "planned"}</li>`)
+          .join("");
+
+        const seasonId = seasons[0] && seasons[0].season_id;
+        let plantingId = null;
+        if (seasonId) {
+          const plantings = await CropPortal.runSemanticRequest("crop.planting.list_by_season", {
+            season_id: seasonId,
+            field_id: fieldId,
+          });
+          plantingId = plantings[0] && plantings[0].planting_id;
+        }
+
+        const operations = plantingId
+          ? await CropPortal.runSemanticRequest("crop.operation.list", { planting_id: plantingId })
+          : [];
+        document.getElementById("operationList").innerHTML = operations.length
+          ? operations
+              .map(
+                (op) =>
+                  `<li><strong>${op.kind}</strong> · ${new Date(op.performed_on).toLocaleString()}<div class="crop-muted">${op.operator || ""}</div></li>`
+              )
+              .join("")
+          : "<li class='crop-muted'>No operations logged.</li>";
+
+        const weather = await CropPortal.runSemanticRequest("crop.weather.daily", { field_id: fieldId });
+        document.getElementById("weatherList").innerHTML = weather.length
+          ? weather
+              .map(
+                (row) =>
+                  `<li>${row.date}: ${row.tmin ?? "—"} / ${row.tmax ?? "—"} °C · GDD ${row.gdd ?? "—"}</li>`
+              )
+              .join("")
+          : "<li class='crop-muted'>Run weather sync worker.</li>";
+
+        CropPortal.setStatus(status, "Loaded field detail");
+      }
+
+      init().catch((err) => CropPortal.setStatus(status, err.message, true));
+    </script>
+  </body>
+</html>

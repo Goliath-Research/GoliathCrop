@@ -1,0 +1,61 @@
+{
+  "crop.farm.list": [
+    { "farm_id": 1, "organization_id": 1, "name": "North Station", "location": "Demo County", "timezone": "America/Chicago", "units": "metric" }
+  ],
+  "crop.field.list_by_farm": [
+    {
+      "field_id": 10,
+      "farm_id": 1,
+      "name": "Field A",
+      "area_ha": 32.5,
+      "soil_type": "silt loam",
+      "geometry": "{\"type\":\"Polygon\",\"coordinates\":[[[-93.1,41.9],[-93.0,41.9],[-93.0,42.0],[-93.1,42.0],[-93.1,41.9]]]}"
+    },
+    {
+      "field_id": 11,
+      "farm_id": 1,
+      "name": "Field B",
+      "area_ha": 18.2,
+      "soil_type": "clay loam",
+      "geometry": null
+    }
+  ],
+  "crop.season.list_by_farm": [
+    { "season_id": 2026, "farm_id": 1, "year": 2026, "campaign": "main", "status": "active" }
+  ],
+  "crop.planting.list_by_season": [
+    { "planting_id": 100, "field_id": 10, "season_id": 2026, "variety_id": 5, "sown_on": "2026-04-15", "density": 78000, "seed_lot": "LOT-42" }
+  ],
+  "crop.operation.list": [
+    {
+      "operation_id": 501,
+      "planting_id": 100,
+      "kind": "irrigation",
+      "performed_on": "2026-05-01T14:00:00Z",
+      "rate": 25,
+      "rate_unit": "mm",
+      "equipment": "Pivot 3",
+      "operator": "J. Smith"
+    }
+  ],
+  "crop.input_lot.list_by_farm": [
+    { "input_lot_id": 7, "item_id": 3, "item_name": "Urea 46%", "lot": "U-2026-01", "on_hand": 1200, "unit": "kg" }
+  ],
+  "crop.weather.daily": [
+    { "field_id": 10, "date": "2026-05-04", "tmin": 8.2, "tmax": 21.4, "precip": 0.0, "gdd": 9.8, "et0": 3.1, "source": "open-meteo" }
+  ],
+  "crop.trial.list_by_season": [
+    { "trial_id": 30, "season_id": 2026, "name": "N rate x hybrid", "design": "RCBD", "treatment_count": 4, "replicate_count": 3 }
+  ],
+  "crop.trial.results": [
+    {
+      "plot_id": 901,
+      "plot_code": "T1-R1",
+      "treatment_code": "N150",
+      "replicate_number": 1,
+      "metric": "yield_t_ha",
+      "value": 10.2,
+      "measured_on": "2026-10-01"
+    }
+  ]
+}

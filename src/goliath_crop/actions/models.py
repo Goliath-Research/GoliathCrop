@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
 from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -40,3 +40,33 @@ class OperationRecordOutput(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     operation_id: int
+
+
+class WeatherRefreshInput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    farm_id: Optional[int] = None
+    field_id: Optional[int] = None
+    days_back: int = Field(default=7, ge=1, le=30)
+
+
+class WeatherRefreshOutput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    fields_refreshed: int
+    rows_upserted: int
+
+
+class TrialRecordObservationInput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    plot_id: int
+    metric: str
+    value: float
+    measured_on: Optional[date] = None
+
+
+class TrialRecordObservationOutput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    measurement_id: int

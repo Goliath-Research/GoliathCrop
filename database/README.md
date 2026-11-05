@@ -16,14 +16,15 @@ export PGHOST=localhost PGPORT=5432 PGDATABASE=goliath_crop PGUSER=postgres PGPA
 
 Scripts under `database/schema/` are idempotent (`CREATE IF NOT EXISTS`, `CREATE OR REPLACE`).
 
-## Layout (Phase 1)
+## Layout
 
 | Schema | Purpose |
 | --- | --- |
 | `crop_core` | Farms, fields (PostGIS), plots, seasons, crops, varieties, plantings |
 | `crop_ops` | Operations, inputs, equipment, inventory |
 | `crop_trial` | Trials, treatments, replicates, plot measurements |
+| `crop_obs` | Daily field weather (Phase 2); sensor hypertables in Phase 3 |
 
-Semantic **views** (`v_*`) back `storage_relation` on entities. Named reads use **functions** scoped to the session user (organization membership and optional farm membership).
+Semantic **views** (`v_*`) back `storage_relation` on entities. Named reads use **functions** scoped to the session user (organization membership and optional farm membership). Phase 2 adds write procs `crop_ops.sp_record_operation` and `crop_trial.sp_record_plot_observation` for portal actions.
 
-TimescaleDB hypertables (`crop_obs`) are Phase 3; not required for Phase 1 apply.
+TimescaleDB hypertables for sensor readings are Phase 3.

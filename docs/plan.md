@@ -1,6 +1,6 @@
 # GoliathCrop — Crop Management plan
 
-Status: in development (Phase 1 core data landed in repo).
+Status: in development (Phase 2 MVP: portal views, weather worker, extended semantic reads).
 
 ## Vision and users
 
