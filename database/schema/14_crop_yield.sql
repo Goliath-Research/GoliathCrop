@@ -192,6 +192,7 @@ END;
 $$;
 
 CREATE OR REPLACE FUNCTION crop_yield.sp_store_prediction(
+  p_user_id integer,
   p_planting_id integer,
   p_predicted_t_ha double precision,
   p_model_version text,
@@ -206,6 +207,18 @@ AS $$
 DECLARE
   v_id bigint;
 BEGIN
+  IF p_user_id IS NOT NULL THEN
+    PERFORM set_config('goliath.crop.user_id', p_user_id::text, true);
+    IF NOT EXISTS (
+      SELECT 1
+      FROM crop_core.plantings pl
+      INNER JOIN crop_core.fields fld ON fld.id = pl.field_id
+      WHERE pl.id = p_planting_id
+        AND crop_core.fn_user_can_access_farm(p_user_id, fld.farm_id)
+    ) THEN
+      RAISE EXCEPTION 'planting not accessible';
+    END IF;
+  END IF;
   IF p_model_backend IS NULL OR p_model_backend NOT IN ('cpu', 'runpod') THEN
     p_model_backend := 'cpu';
   END IF;

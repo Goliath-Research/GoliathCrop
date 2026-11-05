@@ -24,9 +24,10 @@ def _features_for_planting(cur, planting_id: int) -> PlantingFeatures:
           pl.id,
           COALESCE(SUM(w.gdd), 0) AS gdd_total,
           (
-            SELECT AVG(fis.ndvi_mean)
+            SELECT AVG(fis.mean_value)
             FROM crop_img.field_index_stats fis
             WHERE fis.field_id = pl.field_id
+              AND fis.index_name = 'ndvi'
           ) AS ndvi_mean,
           v.maturity_days,
           fld.area_ha
@@ -53,7 +54,7 @@ def _features_for_planting(cur, planting_id: int) -> PlantingFeatures:
     )
 
 
-def run_yield_predict_for_season(*, season_id: int) -> SeasonYieldResult:
+def run_yield_predict_for_season(*, season_id: int, user_id: int | None = None) -> SeasonYieldResult:
     run_id = uuid.uuid4()
     predictions_written = 0
     planting_count = 0
@@ -74,9 +75,10 @@ def run_yield_predict_for_season(*, season_id: int) -> SeasonYieldResult:
                 backend = prediction.model_backend
                 cur.execute(
                     """
-                    SELECT crop_yield.sp_store_prediction(%s, %s, %s, %s, %s)
+                    SELECT crop_yield.sp_store_prediction(%s, %s, %s, %s, %s, %s)
                     """,
                     (
+                        user_id,
                         planting_id,
                         prediction.predicted_t_ha,
                         prediction.model_version,

@@ -290,7 +290,7 @@ CREATE OR REPLACE FUNCTION crop_link.sp_register_groundstation_flight(
 RETURNS bigint
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = crop_link, crop_core, crop_wf, pg_temp
+SET search_path = crop_link, crop_core, crop_img, crop_wf, pg_temp
 AS $$
 DECLARE
   v_id bigint;
@@ -325,17 +325,12 @@ BEGIN
   RETURNING id INTO v_id;
 
   IF p_imagery_uri IS NOT NULL AND btrim(p_imagery_uri) <> '' THEN
-    PERFORM crop_wf.sp_enqueue_processing_task(
-      'crop.drone.upload',
-      jsonb_build_object(
-        'field_id', p_field_id,
-        'ortho_uri', btrim(p_imagery_uri),
-        'source', 'goliathgroundstation',
-        'external_flight_ref', btrim(p_external_flight_ref)
-      ),
-      'crop.imagery',
-      'groundstation_imagery_registered',
-      'gs:' || p_field_id::text || ':' || btrim(p_external_flight_ref)
+    PERFORM crop_img.sp_register_drone_upload(
+      p_user_id,
+      p_field_id,
+      btrim(p_imagery_uri),
+      NULL,
+      NULL
     );
   END IF;
 

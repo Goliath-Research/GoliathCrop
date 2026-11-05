@@ -321,7 +321,7 @@ def handle_yield_predict(
     context: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     model = YieldPredictInput.model_validate(payload)
-    _ = context
+    user_id = user_id_from_context(context)
     if not libpq_configured():
         return YieldPredictOutput(
             season_id=model.season_id,
@@ -329,7 +329,34 @@ def handle_yield_predict(
             predictions_written=0,
             model_backend="cpu",
         ).model_dump(mode="json")
-    result = run_yield_predict_for_season(season_id=model.season_id)
+    if user_id is not None:
+        with connect() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    SELECT EXISTS (
+                      SELECT 1
+                      FROM crop_core.seasons s
+                      INNER JOIN crop_core.farms f ON f.id = s.farm_id
+                      WHERE s.id = %s
+                        AND (
+                          f.organization_id = ANY (
+                            portal.fn_semantic_user_organization_ids(%s)
+                          )
+                          OR EXISTS (
+                            SELECT 1
+                            FROM crop_core.farm_members m
+                            WHERE m.farm_id = f.id AND m.user_id = %s
+                          )
+                        )
+                    )
+                    """,
+                    (model.season_id, user_id, user_id),
+                )
+                row = cur.fetchone()
+                if row is None or not row[0]:
+                    raise RuntimeError("season not accessible")
+    result = run_yield_predict_for_season(season_id=model.season_id, user_id=user_id)
     return YieldPredictOutput(
         season_id=result.season_id,
         planting_count=result.planting_count,

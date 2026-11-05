@@ -23,6 +23,14 @@
       const list = document.getElementById("sampleList");
       const fieldInput = document.getElementById("fieldId");
 
+      function escapeHtml(value) {
+        return String(value)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
       async function refresh() {
         const fieldId = Number(fieldInput.value);
         const rows = await CropPortal.runSemanticRequest("crop.sample.list_by_field", { field_id: fieldId });
@@ -33,9 +41,9 @@
         list.innerHTML = rows
           .map((row) => {
             const omics = row.omics_run_ref
-              ? `<div class="crop-muted">Omics: ${row.omics_run_ref}</div>`
+              ? `<div class="crop-muted">Omics: ${escapeHtml(row.omics_run_ref)}</div>`
               : "";
-            return `<li>${row.kind} · ${row.collected_on} · sample ${row.sample_id}${omics}</li>`;
+            return `<li>${escapeHtml(row.kind)} · ${escapeHtml(row.collected_on)} · sample ${escapeHtml(row.sample_id)}${omics}</li>`;
           })
           .join("");
       }
