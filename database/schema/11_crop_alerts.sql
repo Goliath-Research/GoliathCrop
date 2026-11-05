@@ -140,7 +140,7 @@ BEGIN
     FROM crop_alerts.alert_events e
     WHERE e.field_id = p_field_id
       AND e.kind = 'frost'
-      AND e.opened_at::date = p_obs_date
+      AND (e.detail->>'obs_date')::date = p_obs_date
       AND e.resolved_at IS NULL
   ) THEN
     RETURN NULL;
