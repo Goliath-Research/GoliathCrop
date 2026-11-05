@@ -742,6 +742,209 @@
       "schema_version": "1",
       "storage_relation": "crop_core.v_plot"
     },
+    "crop.reading": {
+      "attributes": [
+        {
+          "code": "device_id",
+          "column_name": "device_id",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "integer",
+          "role": "filter"
+        },
+        {
+          "code": "ts",
+          "column_name": "ts",
+          "filterable_ops": [
+            "gte",
+            "lte"
+          ],
+          "json_type": "string",
+          "role": "attribute"
+        },
+        {
+          "code": "metric",
+          "column_name": "metric",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "string",
+          "role": "filter"
+        },
+        {
+          "code": "value",
+          "column_name": "value",
+          "filterable_ops": [],
+          "json_type": "number",
+          "role": "measure"
+        }
+      ],
+      "catalog_type_name": null,
+      "code": "reading",
+      "content_hash": "f49a7124653dfab0b747b63a327d496ef7646d8f2fe7b38ffe5e37e9f82c2d43",
+      "description": "Time-series measurement from a sensor device.",
+      "display_name": "Sensor reading",
+      "meta_class_id": null,
+      "meta_class_name": null,
+      "namespace": "crop",
+      "row_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "bucket": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Bucket"
+          },
+          "device_id": {
+            "title": "Device Id",
+            "type": "integer"
+          },
+          "metric": {
+            "title": "Metric",
+            "type": "string"
+          },
+          "ts": {
+            "format": "date-time",
+            "title": "Ts",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "number"
+          }
+        },
+        "required": [
+          "device_id",
+          "ts",
+          "metric",
+          "value"
+        ],
+        "title": "ReadingRow",
+        "type": "object"
+      },
+      "row_type": "portal.crop_reading_row",
+      "schema_id": "goliath.semantic/crop/reading/1",
+      "schema_version": "1",
+      "storage_relation": "crop_obs.sensor_readings"
+    },
+    "crop.scene": {
+      "attributes": [
+        {
+          "code": "scene_id",
+          "column_name": "scene_id",
+          "filterable_ops": [],
+          "json_type": "integer",
+          "role": "key"
+        },
+        {
+          "code": "field_id",
+          "column_name": "field_id",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "integer",
+          "role": "filter"
+        },
+        {
+          "code": "acquired_at",
+          "column_name": "acquired_at",
+          "filterable_ops": [],
+          "json_type": "string",
+          "role": "attribute"
+        },
+        {
+          "code": "source",
+          "column_name": "source",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "string",
+          "role": "attribute"
+        },
+        {
+          "code": "ndvi_mean",
+          "column_name": "ndvi_mean",
+          "filterable_ops": [],
+          "json_type": "number",
+          "role": "measure"
+        }
+      ],
+      "catalog_type_name": null,
+      "code": "scene",
+      "content_hash": "cb90b817d36eb2a6e04ad2228a76b2e3179c00f256923eaa46ad1654eee170f9",
+      "description": "Satellite or drone scene with NDVI stats and COG URI.",
+      "display_name": "Imagery scene",
+      "meta_class_id": null,
+      "meta_class_name": null,
+      "namespace": "crop",
+      "row_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "acquired_at": {
+            "format": "date-time",
+            "title": "Acquired At",
+            "type": "string"
+          },
+          "cog_uri": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Cog Uri"
+          },
+          "field_id": {
+            "title": "Field Id",
+            "type": "integer"
+          },
+          "ndvi_mean": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Ndvi Mean"
+          },
+          "scene_id": {
+            "title": "Scene Id",
+            "type": "integer"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "scene_id",
+          "field_id",
+          "acquired_at",
+          "source"
+        ],
+        "title": "SceneRow",
+        "type": "object"
+      },
+      "row_type": "portal.crop_scene_row",
+      "schema_id": "goliath.semantic/crop/scene/1",
+      "schema_version": "1",
+      "storage_relation": "crop_img.v_scene"
+    },
     "crop.season": {
       "attributes": [
         {
@@ -848,6 +1051,133 @@
       "schema_id": "goliath.semantic/crop/season/1",
       "schema_version": "1",
       "storage_relation": "crop_core.v_season"
+    },
+    "crop.sensor": {
+      "attributes": [
+        {
+          "code": "device_id",
+          "column_name": "device_id",
+          "filterable_ops": [],
+          "json_type": "integer",
+          "role": "key"
+        },
+        {
+          "code": "farm_id",
+          "column_name": "farm_id",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "integer",
+          "role": "filter"
+        },
+        {
+          "code": "kind",
+          "column_name": "kind",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "string",
+          "role": "attribute"
+        },
+        {
+          "code": "field_id",
+          "column_name": "field_id",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "integer",
+          "role": "filter"
+        },
+        {
+          "code": "label",
+          "column_name": "label",
+          "filterable_ops": [
+            "ilike"
+          ],
+          "json_type": "string",
+          "role": "label"
+        },
+        {
+          "code": "last_reading_at",
+          "column_name": "last_reading_at",
+          "filterable_ops": [],
+          "json_type": "string",
+          "role": "attribute"
+        }
+      ],
+      "catalog_type_name": null,
+      "code": "sensor",
+      "content_hash": "690fbcc8126e799d7d93a433db856c5e6d982a27a550b1d1e405fd7abfabc92f",
+      "description": "Field or farm IoT sensor device.",
+      "display_name": "Sensor",
+      "meta_class_id": null,
+      "meta_class_name": null,
+      "namespace": "crop",
+      "row_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "device_id": {
+            "title": "Device Id",
+            "type": "integer"
+          },
+          "farm_id": {
+            "title": "Farm Id",
+            "type": "integer"
+          },
+          "field_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Field Id"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Label"
+          },
+          "last_reading_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Last Reading At"
+          }
+        },
+        "required": [
+          "device_id",
+          "farm_id",
+          "kind"
+        ],
+        "title": "SensorRow",
+        "type": "object"
+      },
+      "row_type": "portal.crop_sensor_row",
+      "schema_id": "goliath.semantic/crop/sensor/1",
+      "schema_version": "1",
+      "storage_relation": "crop_obs.v_device"
     },
     "crop.trial": {
       "attributes": [
@@ -1765,6 +2095,225 @@
       "target_name": "crop_core.fn_semantic_planting_list_by_season",
       "version": "1"
     },
+    "crop.reading.window": {
+      "base_namespace": null,
+      "content_hash": "cd02b691036e448bf7882b063a4c5d8ee4bdb3a071f58bdb8230106a949a6cb3",
+      "entity_code": "reading",
+      "filter_template": null,
+      "max_rows": 5000,
+      "namespace": "crop",
+      "params_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "bucket": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Bucket"
+          },
+          "from": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "From"
+          },
+          "sensor_id": {
+            "title": "Sensor Id",
+            "type": "integer"
+          },
+          "to": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "To"
+          }
+        },
+        "required": [
+          "sensor_id"
+        ],
+        "title": "ReadingWindowParams",
+        "type": "object"
+      },
+      "request_code": "crop.reading.window",
+      "required_permission": "crop.sensor.read",
+      "result_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "bucket": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Bucket"
+          },
+          "device_id": {
+            "title": "Device Id",
+            "type": "integer"
+          },
+          "metric": {
+            "title": "Metric",
+            "type": "string"
+          },
+          "ts": {
+            "format": "date-time",
+            "title": "Ts",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "number"
+          }
+        },
+        "required": [
+          "device_id",
+          "ts",
+          "metric",
+          "value"
+        ],
+        "title": "ReadingRow",
+        "type": "object"
+      },
+      "row_type": "portal.crop_reading_row",
+      "schema_id": "goliath.semantic/crop/crop.reading.window/1",
+      "target_kind": "function",
+      "target_name": "crop_obs.fn_readings_window",
+      "version": "1"
+    },
+    "crop.scene.list_by_field": {
+      "base_namespace": null,
+      "content_hash": "7ebd6848069a24bed91c4fecf29f58c752bd1ce50e89ed99152ac6cdaadc7639",
+      "entity_code": "scene",
+      "filter_template": null,
+      "max_rows": 500,
+      "namespace": "crop",
+      "params_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "field_id": {
+            "title": "Field Id",
+            "type": "integer"
+          },
+          "from": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "From"
+          },
+          "to": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "To"
+          }
+        },
+        "required": [
+          "field_id"
+        ],
+        "title": "SceneListParams",
+        "type": "object"
+      },
+      "request_code": "crop.scene.list_by_field",
+      "required_permission": "crop.imagery.read",
+      "result_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "acquired_at": {
+            "format": "date-time",
+            "title": "Acquired At",
+            "type": "string"
+          },
+          "cog_uri": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Cog Uri"
+          },
+          "field_id": {
+            "title": "Field Id",
+            "type": "integer"
+          },
+          "ndvi_mean": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Ndvi Mean"
+          },
+          "scene_id": {
+            "title": "Scene Id",
+            "type": "integer"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "scene_id",
+          "field_id",
+          "acquired_at",
+          "source"
+        ],
+        "title": "SceneRow",
+        "type": "object"
+      },
+      "row_type": "portal.crop_scene_row",
+      "schema_id": "goliath.semantic/crop/crop.scene.list_by_field/1",
+      "target_kind": "function",
+      "target_name": "crop_img.fn_semantic_scene_list",
+      "version": "1"
+    },
     "crop.season.list_by_farm": {
       "base_namespace": null,
       "content_hash": "60933a22123e5645f9f587a1ae28fcdbcadfd967524d34d0ffeca28490196a9a",
@@ -1840,6 +2389,96 @@
       "schema_id": "goliath.semantic/crop/crop.season.list_by_farm/1",
       "target_kind": "function",
       "target_name": "crop_core.fn_semantic_season_list_by_farm",
+      "version": "1"
+    },
+    "crop.sensor.list_by_farm": {
+      "base_namespace": null,
+      "content_hash": "64e600f368b07a5051a2a8d237a1dab19978b5f164e78620c8f610d20594e52e",
+      "entity_code": "sensor",
+      "filter_template": null,
+      "max_rows": 500,
+      "namespace": "crop",
+      "params_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "farm_id": {
+            "title": "Farm Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "farm_id"
+        ],
+        "title": "SensorListParams",
+        "type": "object"
+      },
+      "request_code": "crop.sensor.list_by_farm",
+      "required_permission": "crop.sensor.read",
+      "result_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "device_id": {
+            "title": "Device Id",
+            "type": "integer"
+          },
+          "farm_id": {
+            "title": "Farm Id",
+            "type": "integer"
+          },
+          "field_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Field Id"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Label"
+          },
+          "last_reading_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Last Reading At"
+          }
+        },
+        "required": [
+          "device_id",
+          "farm_id",
+          "kind"
+        ],
+        "title": "SensorRow",
+        "type": "object"
+      },
+      "row_type": "portal.crop_sensor_row",
+      "schema_id": "goliath.semantic/crop/crop.sensor.list_by_farm/1",
+      "target_kind": "function",
+      "target_name": "crop_obs.fn_semantic_device_list",
       "version": "1"
     },
     "crop.trial.list_by_season": {

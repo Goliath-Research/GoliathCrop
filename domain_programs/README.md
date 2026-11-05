@@ -1,15 +1,23 @@
-# GoliathCrop DomainPrograms (Phase 2 MVP)
+# GoliathCrop DomainPrograms (Phase 3 sensing)
 
-| Program | Action | Capability | Trigger |
+| Program | Action | Capability | Activation |
 | --- | --- | --- | --- |
-| Weather sync | `crop.weather.refresh` | `crop.weather` | Scheduled backlog per farm/field |
+| Weather sync | `crop.weather.refresh` | `crop.weather` | Claim (backlog) |
+| Sensor ingest / QC | `crop.sensor.ingest_batch`, `crop.sensor.qc` | `crop.ingest` | Wake + claim (`crop_obs.sp_ingest_sensor_batch` → `crop_wf.sp_enqueue_processing_task`) |
+| Satellite fetch | `crop.scene.fetch_and_index` | `crop.imagery` | Claim / user action |
+| Imagery processing (NDVI) | `crop.imagery.process` | `crop.imagery` | Wake + claim (scene or drone upload registered) |
+| Drone upload | `crop.drone.upload` | `crop.imagery` | Wake + claim |
+| Alerts (frost, stress, pests) | `crop.alert.evaluate` | `crop.alerts` | Wake + claim (`crop_alerts.sp_open_alert`) |
 
-Workers claim through goliath-gateway, then call `goliath_crop.workers.dispatch.handle`. Weather uses the free Open-Meteo archive API (no paid keys). NOAA NWS can supplement US sites in a later patch; MVP stores Open-Meteo daily aggregates in `crop_obs.weather_daily`.
-
-Python entry:
+Workers claim through **goliath-gateway**, then call `goliath_crop.workers.dispatch.handle`. Wake hints use Postgres `NOTIFY` on `gw1_capability_*` channels (see GoliathApp [dual activation](https://github.com/Goliath-Research/GoliathApp/blob/main/docs/dual-activation.md) and `crop_wf.sp_publish_capability_wake`).
 
 ```python
 from goliath_crop.workers.dispatch import handle
 
-handle("crop.weather.refresh", {"farm_id": 1, "days_back": 7})
+handle("crop.sensor.qc", {"device_id": 1})
+handle("crop.imagery.process", {"scene_id": 42})
 ```
+
+TimescaleDB: sensor readings use a hypertable when the extension is present (Neon Apache-2 tier). Without TimescaleDB, `crop_obs.sensor_readings` remains a plain Postgres table and `fn_readings_window` falls back to `date_trunc` bucketing.
+
+Imagery: STAC search uses the free Element84 Earth Search API. COG output paths come from `CROP_RASTER_ROOT` (local directory or `s3://` prefix; no secrets in repo).

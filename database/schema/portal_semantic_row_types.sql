@@ -156,6 +156,53 @@ BEGIN
     );
   END IF;
 END $$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_type t
+    JOIN pg_namespace n ON n.oid = t.typnamespace
+    WHERE n.nspname = 'portal' AND t.typname = 'crop_sensor_row'
+  ) THEN
+    CREATE TYPE portal.crop_sensor_row AS (
+  device_id integer,
+  farm_id integer,
+  kind text
+    );
+  END IF;
+END $$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_type t
+    JOIN pg_namespace n ON n.oid = t.typnamespace
+    WHERE n.nspname = 'portal' AND t.typname = 'crop_reading_row'
+  ) THEN
+    CREATE TYPE portal.crop_reading_row AS (
+  device_id integer,
+  ts text,
+  metric text,
+  value double precision
+    );
+  END IF;
+END $$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_type t
+    JOIN pg_namespace n ON n.oid = t.typnamespace
+    WHERE n.nspname = 'portal' AND t.typname = 'crop_scene_row'
+  ) THEN
+    CREATE TYPE portal.crop_scene_row AS (
+  scene_id integer,
+  field_id integer,
+  acquired_at text,
+  source text
+    );
+  END IF;
+END $$;
 DO $$
 BEGIN
   IF NOT EXISTS (

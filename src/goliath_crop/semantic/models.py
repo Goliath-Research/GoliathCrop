@@ -192,3 +192,58 @@ class WeatherDailyParams(BaseModel):
     field_id: int
     from_: Optional[date] = Field(default=None, alias="from")
     to: Optional[date] = None
+
+
+class SensorRow(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    device_id: int
+    farm_id: int
+    kind: str
+    field_id: Optional[int] = None
+    label: Optional[str] = None
+    last_reading_at: Optional[datetime] = None
+
+
+class ReadingRow(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    device_id: int
+    ts: datetime
+    metric: str
+    value: float
+    bucket: Optional[datetime] = None
+
+
+class SceneRow(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    scene_id: int
+    field_id: int
+    acquired_at: datetime
+    source: str
+    ndvi_mean: Optional[float] = None
+    cog_uri: Optional[str] = None
+
+
+class SensorListParams(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    farm_id: int
+
+
+class ReadingWindowParams(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    sensor_id: int
+    from_: Optional[datetime] = Field(default=None, alias="from")
+    to: Optional[datetime] = None
+    bucket: Optional[str] = None
+
+
+class SceneListParams(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    field_id: int
+    from_: Optional[datetime] = Field(default=None, alias="from")
+    to: Optional[datetime] = None

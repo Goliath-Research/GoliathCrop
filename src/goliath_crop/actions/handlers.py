@@ -6,16 +6,32 @@ from datetime import date
 from typing import Any
 
 from goliath_crop.actions.models import (
+    AlertEvaluateInput,
+    AlertEvaluateOutput,
+    DroneUploadInput,
+    DroneUploadOutput,
     FieldImportBoundariesInput,
     FieldImportBoundariesOutput,
+    ImageryProcessInput,
+    ImageryProcessOutput,
     OperationRecordInput,
     OperationRecordOutput,
+    SceneFetchAndIndexInput,
+    SceneFetchAndIndexOutput,
+    SensorIngestBatchInput,
+    SensorIngestBatchOutput,
+    SensorQcInput,
+    SensorQcOutput,
     TrialRecordObservationInput,
     TrialRecordObservationOutput,
     WeatherRefreshInput,
     WeatherRefreshOutput,
 )
 from goliath_crop.db import connect, libpq_configured, user_id_from_context
+from goliath_crop.workers.alerts import evaluate_alert
+from goliath_crop.workers.imagery_process import process_scene, register_drone_upload
+from goliath_crop.workers.satellite_fetch import fetch_scenes_for_field
+from goliath_crop.workers.sensor_ingest import ingest_sensor_batch, run_sensor_qc
 from goliath_crop.workers.weather_sync import refresh_weather
 
 
@@ -114,3 +130,106 @@ def handle_trial_record_observation(
             measurement_id = int(row[0])
         conn.commit()
     return TrialRecordObservationOutput(measurement_id=measurement_id).model_dump(mode="json")
+
+
+def handle_sensor_ingest_batch(
+    payload: dict[str, Any],
+    *,
+    context: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    model = SensorIngestBatchInput.model_validate(payload)
+    _ = context
+    if not libpq_configured():
+        return SensorIngestBatchOutput(inserted_count=0, task_id=None).model_dump(mode="json")
+    readings = [r.model_dump(mode="json") for r in model.readings]
+    result = ingest_sensor_batch(device_id=model.device_id, readings=readings)
+    return SensorIngestBatchOutput(
+        inserted_count=result.inserted_count,
+        task_id=None,
+    ).model_dump(mode="json")
+
+
+def handle_sensor_qc(
+    payload: dict[str, Any],
+    *,
+    context: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    model = SensorQcInput.model_validate(payload)
+    _ = context
+    if not libpq_configured():
+        return SensorQcOutput(device_id=model.device_id, alerts_opened=0).model_dump(mode="json")
+    opened = run_sensor_qc(device_id=model.device_id)
+    return SensorQcOutput(device_id=model.device_id, alerts_opened=opened).model_dump(mode="json")
+
+
+def handle_scene_fetch_and_index(
+    payload: dict[str, Any],
+    *,
+    context: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    model = SceneFetchAndIndexInput.model_validate(payload)
+    _ = context
+    if not libpq_configured():
+        return SceneFetchAndIndexOutput(scenes_registered=0, scene_ids=[]).model_dump(mode="json")
+    result = fetch_scenes_for_field(
+        field_id=model.field_id,
+        days_back=model.days_back,
+        max_cloud_fraction=model.max_cloud_fraction,
+        collections=list(model.collections),
+    )
+    return SceneFetchAndIndexOutput(
+        scenes_registered=result.scenes_registered,
+        scene_ids=result.scene_ids,
+    ).model_dump(mode="json")
+
+
+def handle_imagery_process(
+    payload: dict[str, Any],
+    *,
+    context: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    model = ImageryProcessInput.model_validate(payload)
+    _ = context
+    if not libpq_configured():
+        return ImageryProcessOutput(
+            scene_id=model.scene_id,
+            cog_uri="",
+            ndvi_mean=0.0,
+        ).model_dump(mode="json")
+    result = process_scene(scene_id=model.scene_id)
+    return ImageryProcessOutput(
+        scene_id=result.scene_id,
+        cog_uri=result.cog_uri,
+        ndvi_mean=result.ndvi_mean,
+    ).model_dump(mode="json")
+
+
+def handle_drone_upload(
+    payload: dict[str, Any],
+    *,
+    context: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    model = DroneUploadInput.model_validate(payload)
+    _ = context
+    if not libpq_configured():
+        return DroneUploadOutput(scene_id=0, task_id=None).model_dump(mode="json")
+    scene_id = register_drone_upload(
+        field_id=model.field_id,
+        storage_uri=model.storage_uri,
+        acquired_at=model.acquired_at,
+        footprint_wkt=model.footprint_wkt,
+    )
+    return DroneUploadOutput(scene_id=scene_id, task_id=None).model_dump(mode="json")
+
+
+def handle_alert_evaluate(
+    payload: dict[str, Any],
+    *,
+    context: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    model = AlertEvaluateInput.model_validate(payload)
+    _ = context
+    if not libpq_configured():
+        return AlertEvaluateOutput(alert_id=model.alert_id, status="skipped").model_dump(mode="json")
+    result = evaluate_alert(alert_id=model.alert_id)
+    return AlertEvaluateOutput(alert_id=result.alert_id, status=result.status).model_dump(mode="json")

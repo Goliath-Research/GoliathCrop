@@ -8,19 +8,29 @@ from goliath_crop.workers.dispatch import capability_for_action, handle, known_a
 
 
 def test_known_worker_actions() -> None:
-    assert "crop.weather.refresh" in known_action_names()
+    names = known_action_names()
+    assert "crop.weather.refresh" in names
+    assert "crop.sensor.qc" in names
+    assert "crop.imagery.process" in names
+
+
+def test_sensor_qc_without_db() -> None:
+    out = handle("crop.sensor.qc", {"device_id": 1})
+    assert out["alerts_opened"] == 0
+
+
+def test_capability_mapping() -> None:
+    assert capability_for_action("crop.weather.refresh") == "crop.weather"
+    assert capability_for_action("crop.sensor.ingest_batch") == "crop.ingest"
+    assert capability_for_action("crop.alert.evaluate") == "crop.alerts"
+
+
+def test_dispatch_unknown_action_raises() -> None:
+    with pytest.raises(KeyError):
+        handle("crop.unknown.action", {})
 
 
 def test_weather_refresh_without_db() -> None:
     out = handle("crop.weather.refresh", {"farm_id": 1, "days_back": 3})
     assert out["fields_refreshed"] == 0
     assert out["rows_upserted"] == 0
-
-
-def test_capability_mapping() -> None:
-    assert capability_for_action("crop.weather.refresh") == "crop.weather"
-
-
-def test_dispatch_unknown_action_raises() -> None:
-    with pytest.raises(KeyError):
-        handle("crop.unknown.action", {})

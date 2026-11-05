@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Crop · Sensors &amp; weather</title>
+    <link rel="stylesheet" href="../static/crop-shell.css" />
+  </head>
+  <body>
+    <h1>Sensors &amp; weather</h1>
+    <div class="crop-toolbar">
+      <label>
+        Farm ID
+        <input id="farmId" type="number" value="1" />
+      </label>
+      <label>
+        Field ID
+        <input id="fieldId" type="number" value="10" />
+      </label>
+      <label>
+        Sensor ID
+        <input id="sensorId" type="number" value="1" />
+      </label>
+      <button type="button" id="reloadSensors">Load sensors</button>
+      <button type="button" id="reloadReadings">Load readings</button>
+      <button type="button" id="reloadWeather">Load weather</button>
+    </div>
+    <h2>Sensors</h2>
+    <ul class="crop-list" id="sensorList"></ul>
+    <h2>Recent readings</h2>
+    <ul class="crop-list" id="readingList"></ul>
+    <h2>Daily weather</h2>
+    <ul class="crop-list" id="weatherList"></ul>
+    <p class="crop-muted">
+      Weather from Open-Meteo (`crop.weather.refresh`). Sensor batches ingest via
+      `crop.sensor.ingest_batch` into TimescaleDB with wake + claim QC.
+    </p>
+    <p class="crop-status" id="status"></p>
+    <script src="../static/crop-api.js"></script>
+    <script>
+      const status = document.getElementById("status");
+      async function loadSensors() {
+        const farmId = Number(document.getElementById("farmId").value || 1);
+        const rows = await CropPortal.runSemanticRequest("crop.sensor.list_by_farm", { farm_id: farmId });
+        document.getElementById("sensorList").innerHTML = rows
+          .map(
+            (row) =>
+              `<li>#${row.device_id} ${row.kind}${row.label ? " · " + row.label : ""} · last ${row.last_reading_at ?? "—"}</li>`
+          )
+          .join("");
+        CropPortal.setStatus(status, `${rows.length} sensor(s)`);
+      }
+      async function loadReadings() {
+        const sensorId = Number(document.getElementById("sensorId").value || 1);
+        const rows = await CropPortal.runSemanticRequest("crop.reading.window", {
+          sensor_id: sensorId,
+          bucket: "1 hour",
+        });
+        document.getElementById("readingList").innerHTML = rows
+          .map((row) => `<li>${row.ts}: ${row.metric} = ${row.value}</li>`)
+          .join("");
+        CropPortal.setStatus(status, `${rows.length} reading(s)`);
+      }
+      async function loadWeather() {
+        const fieldId = Number(document.getElementById("fieldId").value || 10);
+        const rows = await CropPortal.runSemanticRequest("crop.weather.daily", { field_id: fieldId });
+        document.getElementById("weatherList").innerHTML = rows
+          .map(
+            (row) =>
+              `<li>${row.date}: min ${row.tmin ?? "—"} / max ${row.tmax ?? "—"} °C · precip ${row.precip ?? 0} mm</li>`
+          )
+          .join("");
+        CropPortal.setStatus(status, `${rows.length} weather day(s)`);
+      }
+      document.getElementById("reloadSensors").addEventListener("click", () =>
+        loadSensors().catch((e) => CropPortal.setStatus(status, e.message, true))
+      );
+      document.getElementById("reloadReadings").addEventListener("click", () =>
+        loadReadings().catch((e) => CropPortal.setStatus(status, e.message, true))
+      );
+      document.getElementById("reloadWeather").addEventListener("click", () =>
+        loadWeather().catch((e) => CropPortal.setStatus(status, e.message, true))
+      );
+      loadSensors().catch((e) => CropPortal.setStatus(status, e.message, true));
+    </script>
+  </body>
+</html>

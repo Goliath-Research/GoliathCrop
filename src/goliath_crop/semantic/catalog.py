@@ -25,6 +25,12 @@ from goliath_crop.semantic.models import (
     VarietyRow,
     WeatherDailyParams,
     WeatherRow,
+    SensorRow,
+    ReadingRow,
+    SceneRow,
+    SensorListParams,
+    ReadingWindowParams,
+    SceneListParams,
 )
 
 FARM_ENTITY = SemanticEntitySpec(
@@ -250,6 +256,63 @@ WEATHER_ENTITY = SemanticEntitySpec(
     ),
 )
 
+SENSOR_ENTITY = SemanticEntitySpec(
+    namespace="crop",
+    code="sensor",
+    display_name="Sensor",
+    description="Field or farm IoT sensor device.",
+    schema_version="1",
+    row_model=SensorRow,
+    storage_relation="crop_obs.v_device",
+    attributes=(
+        SemanticAttributeSpec("device_id", "device_id", "integer", "key", ()),
+        SemanticAttributeSpec("farm_id", "farm_id", "integer", "filter", ("eq",)),
+        SemanticAttributeSpec("kind", "kind", "string", "attribute", ("eq",)),
+        SemanticAttributeSpec("field_id", "field_id", "integer", "filter", ("eq",)),
+        SemanticAttributeSpec("label", "label", "string", "label", ("ilike",)),
+        SemanticAttributeSpec(
+            "last_reading_at",
+            "last_reading_at",
+            "string",
+            "attribute",
+            (),
+        ),
+    ),
+)
+
+READING_ENTITY = SemanticEntitySpec(
+    namespace="crop",
+    code="reading",
+    display_name="Sensor reading",
+    description="Time-series measurement from a sensor device.",
+    schema_version="1",
+    row_model=ReadingRow,
+    storage_relation="crop_obs.sensor_readings",
+    attributes=(
+        SemanticAttributeSpec("device_id", "device_id", "integer", "filter", ("eq",)),
+        SemanticAttributeSpec("ts", "ts", "string", "attribute", ("gte", "lte")),
+        SemanticAttributeSpec("metric", "metric", "string", "filter", ("eq",)),
+        SemanticAttributeSpec("value", "value", "number", "measure", ()),
+    ),
+)
+
+SCENE_ENTITY = SemanticEntitySpec(
+    namespace="crop",
+    code="scene",
+    display_name="Imagery scene",
+    description="Satellite or drone scene with NDVI stats and COG URI.",
+    schema_version="1",
+    row_model=SceneRow,
+    storage_relation="crop_img.v_scene",
+    attributes=(
+        SemanticAttributeSpec("scene_id", "scene_id", "integer", "key", ()),
+        SemanticAttributeSpec("field_id", "field_id", "integer", "filter", ("eq",)),
+        SemanticAttributeSpec("acquired_at", "acquired_at", "string", "attribute", ()),
+        SemanticAttributeSpec("source", "source", "string", "attribute", ("eq",)),
+        SemanticAttributeSpec("ndvi_mean", "ndvi_mean", "number", "measure", ()),
+    ),
+)
+
 SEMANTIC_CATALOG: list[SemanticEntitySpec] = [
     FARM_ENTITY,
     FIELD_ENTITY,
@@ -261,6 +324,9 @@ SEMANTIC_CATALOG: list[SemanticEntitySpec] = [
     INPUT_LOT_ENTITY,
     TRIAL_ENTITY,
     WEATHER_ENTITY,
+    SENSOR_ENTITY,
+    READING_ENTITY,
+    SCENE_ENTITY,
 ]
 
 SEMANTIC_REQUESTS: list[SemanticRequestSpec] = [
@@ -371,5 +437,41 @@ SEMANTIC_REQUESTS: list[SemanticRequestSpec] = [
         result_row_model=TrialResultRow,
         required_permission="crop.trial.read",
         max_rows=2000,
+    ),
+    SemanticRequestSpec(
+        request_code="crop.sensor.list_by_farm",
+        version="1",
+        namespace="crop",
+        entity_code="sensor",
+        target_kind="function",
+        target_name="crop_obs.fn_semantic_device_list",
+        params_model=SensorListParams,
+        result_row_model=SensorRow,
+        required_permission="crop.sensor.read",
+        max_rows=500,
+    ),
+    SemanticRequestSpec(
+        request_code="crop.reading.window",
+        version="1",
+        namespace="crop",
+        entity_code="reading",
+        target_kind="function",
+        target_name="crop_obs.fn_readings_window",
+        params_model=ReadingWindowParams,
+        result_row_model=ReadingRow,
+        required_permission="crop.sensor.read",
+        max_rows=5000,
+    ),
+    SemanticRequestSpec(
+        request_code="crop.scene.list_by_field",
+        version="1",
+        namespace="crop",
+        entity_code="scene",
+        target_kind="function",
+        target_name="crop_img.fn_semantic_scene_list",
+        params_model=SceneListParams,
+        result_row_model=SceneRow,
+        required_permission="crop.imagery.read",
+        max_rows=500,
     ),
 ]

@@ -8,11 +8,18 @@ from goliath_crop.actions.catalog import ACTIONS
 
 
 def test_phase1_domain_actions_typed() -> None:
+    hidden = {
+        "crop.weather.refresh",
+        "crop.sensor.ingest_batch",
+        "crop.sensor.qc",
+        "crop.imagery.process",
+        "crop.alert.evaluate",
+    }
     for spec in ACTIONS:
         assert spec.level == ActionLevel.DOMAIN
         assert spec.input_model.model_json_schema()
         assert spec.output_model.model_json_schema()
-        if spec.action_name == "crop.weather.refresh":
+        if spec.action_name in hidden:
             assert spec.resolved_exposure == ActionExposure.HIDDEN
             assert spec.required_permission is None
         else:
