@@ -9,6 +9,7 @@ import sys
 from goliath_app.semantic.export import _schema_id, content_hash_for
 
 from goliath_crop.semantic.catalog import SEMANTIC_CATALOG, SEMANTIC_REQUESTS
+from goliath_crop.semantic.export import request_row_type
 
 
 def _connect():
@@ -109,7 +110,7 @@ def seed(conn) -> int:
                     "filter_template": filter_payload,
                 }
             )
-            row_type = f"{entity.namespace}_{entity.code}_row".replace(".", "_")
+            row_type = request_row_type(req, entity)
             cur.execute(
                 """
                 CALL portal.sp_semantic_register_request(

@@ -73,9 +73,21 @@ SELECT
 FROM crop_ops.inventory_lots l
 JOIN crop_ops.inventory_items i ON i.id = l.item_id;
 
+ALTER TABLE crop_ops.equipment ENABLE ROW LEVEL SECURITY;
 ALTER TABLE crop_ops.operations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE crop_ops.operation_inputs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE crop_ops.inventory_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE crop_ops.inventory_lots ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS equipment_farm ON crop_ops.equipment;
+CREATE POLICY equipment_farm ON crop_ops.equipment
+  FOR ALL
+  USING (
+    crop_core.fn_user_can_access_farm(
+      NULLIF(current_setting('goliath.crop.user_id', true), '')::integer,
+      farm_id
+    )
+  );
 
 DROP POLICY IF EXISTS operations_planting_access ON crop_ops.operations;
 CREATE POLICY operations_planting_access ON crop_ops.operations
@@ -86,6 +98,23 @@ CREATE POLICY operations_planting_access ON crop_ops.operations
       FROM crop_core.plantings pl
       JOIN crop_core.fields fld ON fld.id = pl.field_id
       WHERE pl.id = planting_id
+        AND crop_core.fn_user_can_access_farm(
+          NULLIF(current_setting('goliath.crop.user_id', true), '')::integer,
+          fld.farm_id
+        )
+    )
+  );
+
+DROP POLICY IF EXISTS operation_inputs_operation ON crop_ops.operation_inputs;
+CREATE POLICY operation_inputs_operation ON crop_ops.operation_inputs
+  FOR ALL
+  USING (
+    EXISTS (
+      SELECT 1
+      FROM crop_ops.operations o
+      INNER JOIN crop_core.plantings pl ON pl.id = o.planting_id
+      INNER JOIN crop_core.fields fld ON fld.id = pl.field_id
+      WHERE o.id = operation_id
         AND crop_core.fn_user_can_access_farm(
           NULLIF(current_setting('goliath.crop.user_id', true), '')::integer,
           fld.farm_id

@@ -76,6 +76,61 @@ CREATE POLICY trials_season_access ON crop_trial.trials
     )
   );
 
+ALTER TABLE crop_trial.treatments ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS treatments_trial_access ON crop_trial.treatments;
+CREATE POLICY treatments_trial_access ON crop_trial.treatments
+  FOR ALL
+  USING (
+    EXISTS (
+      SELECT 1
+      FROM crop_trial.trials t
+      INNER JOIN crop_core.seasons s ON s.id = t.season_id
+      WHERE t.id = trial_id
+        AND crop_core.fn_user_can_access_farm(
+          NULLIF(current_setting('goliath.crop.user_id', true), '')::integer,
+          s.farm_id
+        )
+    )
+  );
+
+ALTER TABLE crop_trial.replicates ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS replicates_treatment_access ON crop_trial.replicates;
+CREATE POLICY replicates_treatment_access ON crop_trial.replicates
+  FOR ALL
+  USING (
+    EXISTS (
+      SELECT 1
+      FROM crop_trial.treatments tx
+      INNER JOIN crop_trial.trials t ON t.id = tx.trial_id
+      INNER JOIN crop_core.seasons s ON s.id = t.season_id
+      WHERE tx.id = treatment_id
+        AND crop_core.fn_user_can_access_farm(
+          NULLIF(current_setting('goliath.crop.user_id', true), '')::integer,
+          s.farm_id
+        )
+    )
+  );
+
+ALTER TABLE crop_trial.plot_measurements ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS plot_measurements_plot_access ON crop_trial.plot_measurements;
+CREATE POLICY plot_measurements_plot_access ON crop_trial.plot_measurements
+  FOR ALL
+  USING (
+    EXISTS (
+      SELECT 1
+      FROM crop_core.plots p
+      INNER JOIN crop_core.fields fld ON fld.id = p.field_id
+      WHERE p.id = plot_id
+        AND crop_core.fn_user_can_access_farm(
+          NULLIF(current_setting('goliath.crop.user_id', true), '')::integer,
+          fld.farm_id
+        )
+    )
+  );
+
 CREATE OR REPLACE FUNCTION crop_trial.fn_trial_results(
   p_user_id integer,
   p_params jsonb,
@@ -119,15 +174,22 @@ BEGIN
   SELECT
     p.id,
     p.code,
-    tx.code,
-    rx.replicate_number,
+    tr.treatment_code,
+    tr.replicate_number,
     pm.metric,
     pm.value,
     pm.measured_on
   FROM crop_trial.plot_measurements pm
   INNER JOIN crop_core.plots p ON p.id = pm.plot_id
-  LEFT JOIN crop_trial.replicates rx ON rx.plot_id = p.id
-  LEFT JOIN crop_trial.treatments tx ON tx.id = rx.treatment_id
+  LEFT JOIN LATERAL (
+    SELECT tx.code AS treatment_code, rx.replicate_number
+    FROM crop_trial.replicates rx
+    INNER JOIN crop_trial.treatments tx ON tx.id = rx.treatment_id
+    WHERE rx.plot_id = p.id
+      AND tx.trial_id = v_trial_id
+    ORDER BY rx.replicate_number
+    LIMIT 1
+  ) tr ON true
   WHERE p.trial_id = v_trial_id
   ORDER BY p.code, pm.metric, pm.measured_on
   LIMIT v_lim;

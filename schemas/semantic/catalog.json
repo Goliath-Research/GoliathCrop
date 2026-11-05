@@ -1443,7 +1443,7 @@
     },
     "crop.trial.results": {
       "base_namespace": null,
-      "content_hash": "689e2abbb9acc9af51ff29e7000a45eb5f823fc39b96816a75378b707a7c3786",
+      "content_hash": "14483832fa7257afca69c9432b97c35f2edda66a0eefb380f19f1655d64e2f6a",
       "entity_code": "trial",
       "filter_template": null,
       "max_rows": 2000,
@@ -1493,12 +1493,28 @@
             "type": "integer"
           },
           "replicate_number": {
-            "title": "Replicate Number",
-            "type": "integer"
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Replicate Number"
           },
           "treatment_code": {
-            "title": "Treatment Code",
-            "type": "string"
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Treatment Code"
           },
           "value": {
             "anyOf": [
@@ -1516,14 +1532,12 @@
         "required": [
           "plot_id",
           "plot_code",
-          "treatment_code",
-          "replicate_number",
           "metric"
         ],
         "title": "TrialResultRow",
         "type": "object"
       },
-      "row_type": "portal.crop_trial_row",
+      "row_type": "portal.crop_trial_result_row",
       "schema_id": "goliath.semantic/crop/crop.trial.results/1",
       "target_kind": "function",
       "target_name": "crop_trial.fn_trial_results",

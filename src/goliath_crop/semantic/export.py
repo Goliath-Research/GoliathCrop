@@ -4,18 +4,82 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
-from typing import Any, Dict, Optional, Sequence
+from typing import Any, Dict, List, Optional, Sequence
 
-from goliath_app.semantic.export import _schema_id, content_hash_for, export_row_types_sql
-from goliath_app.semantic.spec import SemanticEntitySpec
+from goliath_app.semantic.export import _pg_type_for_field, _schema_id, content_hash_for, export_row_types_sql
+from goliath_app.semantic.spec import SemanticEntitySpec, SemanticRequestSpec
 
 from goliath_crop.semantic.catalog import SEMANTIC_CATALOG, SEMANTIC_REQUESTS
 
 
 def _row_type_name(entity: SemanticEntitySpec) -> str:
     return f"{entity.namespace}_{entity.code}_row".replace(".", "_")
+
+
+def _camel_to_snake(name: str) -> str:
+    return re.sub(r"(?<!^)(?=[A-Z])", "_", name).lower()
+
+
+def _result_row_type_name(req: SemanticRequestSpec) -> str:
+    model_name = req.result_row_model.__name__
+    if model_name.endswith("Row"):
+        model_name = model_name[:-3]
+    return f"{req.namespace}_{_camel_to_snake(model_name)}_row".replace(".", "_")
+
+
+def request_row_type(req: SemanticRequestSpec, entity: SemanticEntitySpec) -> str:
+    if req.result_row_model is entity.row_model:
+        return f"portal.{_row_type_name(entity)}"
+    return f"portal.{_result_row_type_name(req)}"
+
+
+def _row_type_sql_block(type_name: str, model_schema: dict[str, Any]) -> List[str]:
+    props = model_schema.get("properties", {})
+    required = model_schema.get("required", list(props.keys()))
+    field_parts: List[str] = []
+    for name in required:
+        pg_t = _pg_type_for_field(props.get(name, {}))
+        field_parts.append(f"  {name} {pg_t}")
+    fields_sql = ",\n".join(field_parts)
+    return [
+        "DO $$",
+        "BEGIN",
+        "  IF NOT EXISTS (",
+        "    SELECT 1 FROM pg_type t",
+        "    JOIN pg_namespace n ON n.oid = t.typnamespace",
+        f"    WHERE n.nspname = 'portal' AND t.typname = '{type_name}'",
+        "  ) THEN",
+        f"    CREATE TYPE portal.{type_name} AS (",
+        f"{fields_sql}",
+        "    );",
+        "  END IF;",
+        "END $$;",
+        "",
+    ]
+
+
+def export_crop_row_types_sql() -> str:
+    lines = export_row_types_sql(SEMANTIC_CATALOG).splitlines()
+    catalog_entities = {e.code: e for e in SEMANTIC_CATALOG}
+    emitted = {
+        line.split("'")[1]
+        for line in lines
+        if "t.typname = '" in line
+    }
+    for req in SEMANTIC_REQUESTS:
+        entity = catalog_entities[req.entity_code]
+        if req.result_row_model is entity.row_model:
+            continue
+        type_name = _result_row_type_name(req)
+        if type_name in emitted:
+            continue
+        emitted.add(type_name)
+        model_schema = req.result_row_model.model_json_schema(mode="serialization")
+        lines.extend(_row_type_sql_block(type_name, model_schema))
+    return "\n".join(lines)
 
 
 def export_catalog_document() -> Dict[str, Any]:
@@ -91,7 +155,7 @@ def export_catalog_document() -> Dict[str, Any]:
             "entity_code": req.entity_code,
             "target_kind": req.target_kind,
             "target_name": req.target_name,
-            "row_type": f"portal.{_row_type_name(entity)}",
+            "row_type": request_row_type(req, entity),
             "params_schema": params_schema,
             "result_schema": result_schema,
             "filter_template": filter_payload,
@@ -105,7 +169,7 @@ def export_catalog_document() -> Dict[str, Any]:
     return {
         "entities": entities,
         "requests": requests,
-        "row_types_sql": export_row_types_sql(SEMANTIC_CATALOG),
+        "row_types_sql": export_crop_row_types_sql(),
     }
 
 

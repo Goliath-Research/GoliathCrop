@@ -113,8 +113,8 @@ class TrialResultRow(BaseModel):
 
     plot_id: int
     plot_code: str
-    treatment_code: str
-    replicate_number: int
+    treatment_code: Optional[str] = None
+    replicate_number: Optional[int] = None
     metric: str
     value: Optional[float] = None
     measured_on: Optional[date] = None

@@ -142,3 +142,17 @@ BEGIN
     );
   END IF;
 END $$;
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_type t
+    JOIN pg_namespace n ON n.oid = t.typnamespace
+    WHERE n.nspname = 'portal' AND t.typname = 'crop_trial_result_row'
+  ) THEN
+    CREATE TYPE portal.crop_trial_result_row AS (
+  plot_id integer,
+  plot_code text,
+  metric text
+    );
+  END IF;
+END $$;
