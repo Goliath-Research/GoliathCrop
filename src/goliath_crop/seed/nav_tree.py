@@ -19,11 +19,13 @@ def _connect():
 
 
 NAV_SPEC = (
-    ("Crop", None, 20, "crop_root", None),
+    ("Crop", None, 20, "crop_root", "crop"),
     ("Farms & fields", "Crop", 10, "crop_farms_fields", "crop.field.list_by_farm"),
     ("Seasons & plantings", "Crop", 20, "crop_seasons", "crop.planting.list_by_season"),
     ("Operations", "Crop", 30, "crop_operations", "crop.operation.list"),
-    ("Trials", "Crop", 40, "crop_trials", "crop.trial.results"),
+    ("Inventory", "Crop", 35, "crop_inventory", "crop.input_lot.list_by_farm"),
+    ("Sensors & weather", "Crop", 38, "crop_weather", "crop.weather.daily"),
+    ("Trials", "Crop", 40, "crop_trials", "crop.trial.list_by_season"),
 )
 
 
@@ -36,7 +38,16 @@ def _ensure_node_info(cur, name: str, frame_key: str) -> int:
     )
     row = cur.fetchone()
     if row:
-        return int(row[0])
+        info_id = int(row[0])
+        cur.execute(
+            """
+            UPDATE portal."NodeInfos"
+            SET "FrameKey" = %s
+            WHERE "Id" = %s AND "FrameKey" IS DISTINCT FROM %s
+            """,
+            (frame_key, info_id, frame_key),
+        )
+        return info_id
     cur.execute(
         """
         INSERT INTO portal."NodeInfos" ("Name", "Singleton", "TypeId", "FrameKey")
@@ -75,11 +86,11 @@ def seed(conn) -> int:
     with conn.cursor() as cur:
         for caption, parent_caption, seq, info_name, frame_key in NAV_SPEC:
             parent_id = node_ids.get(parent_caption) if parent_caption else None
+            info_id = _ensure_node_info(cur, info_name, frame_key or info_name)
             existing = _find_node(cur, caption, parent_id)
             if existing is not None:
                 node_ids[caption] = existing
                 continue
-            info_id = _ensure_node_info(cur, info_name, frame_key or info_name)
             cur.execute(
                 """
                 SELECT node_id FROM portal.sp_nav_register_node(%s, %s, %s::smallint, %s)

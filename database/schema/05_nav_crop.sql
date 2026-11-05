@@ -19,6 +19,10 @@ BEGIN
     INSERT INTO portal."NodeInfos" ("Name", "Singleton", "TypeId", "FrameKey")
     VALUES (p_info_name, true, 1, p_frame_key)
     RETURNING "Id" INTO v_info;
+  ELSE
+    UPDATE portal."NodeInfos"
+    SET "FrameKey" = p_frame_key
+    WHERE "Id" = v_info AND "FrameKey" IS DISTINCT FROM p_frame_key;
   END IF;
 
   SELECT n."ID" INTO v_exists
@@ -67,7 +71,13 @@ BEGIN
     v_root_id, 'Operations', 30, 'crop_operations', 'crop.operation.list'
   );
   PERFORM crop_core.sp_register_crop_nav_child(
-    v_root_id, 'Trials', 40, 'crop_trials', 'crop.trial.results'
+    v_root_id, 'Inventory', 35, 'crop_inventory', 'crop.input_lot.list_by_farm'
+  );
+  PERFORM crop_core.sp_register_crop_nav_child(
+    v_root_id, 'Sensors & weather', 38, 'crop_weather', 'crop.weather.daily'
+  );
+  PERFORM crop_core.sp_register_crop_nav_child(
+    v_root_id, 'Trials', 40, 'crop_trials', 'crop.trial.list_by_season'
   );
 END;
 $$;

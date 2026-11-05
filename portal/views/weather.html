@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Crop · Weather</title>
+    <link rel="stylesheet" href="../static/crop-shell.css" />
+  </head>
+  <body>
+    <h1>Sensors &amp; weather</h1>
+    <div class="crop-toolbar">
+      <label>
+        Field ID
+        <input id="fieldId" type="number" value="10" />
+      </label>
+      <button type="button" id="reload">Load daily weather</button>
+    </div>
+    <ul class="crop-list" id="weatherList"></ul>
+    <p class="crop-muted">Daily rows come from the Open-Meteo worker (`crop.weather.refresh`). Sensor hypertables arrive in Phase 3.</p>
+    <p class="crop-status" id="status"></p>
+    <script src="../static/crop-api.js"></script>
+    <script>
+      const status = document.getElementById("status");
+      async function load() {
+        const fieldId = Number(document.getElementById("fieldId").value || 10);
+        const rows = await CropPortal.runSemanticRequest("crop.weather.daily", { field_id: fieldId });
+        document.getElementById("weatherList").innerHTML = rows
+          .map(
+            (row) =>
+              `<li>${row.date}: min ${row.tmin ?? "—"} / max ${row.tmax ?? "—"} °C · precip ${row.precip ?? 0} mm · ET0 ${row.et0 ?? "—"}</li>`
+          )
+          .join("");
+        CropPortal.setStatus(status, `${rows.length} day(s)`);
+      }
+      document.getElementById("reload").addEventListener("click", () => load().catch((e) => CropPortal.setStatus(status, e.message, true)));
+      load().catch((e) => CropPortal.setStatus(status, e.message, true));
+    </script>
+  </body>
+</html>

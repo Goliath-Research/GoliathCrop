@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "description": "GoliathCrop portal FrameKey → view mapping for GoliathApp NavTree NodeInfos.FrameKey",
+  "frames": {
+    "crop": { "view": "views/shell.html", "title": "Crop" },
+    "crop.field.list_by_farm": { "view": "views/farm-map.html", "title": "Farms & fields" },
+    "crop.field.detail": { "view": "views/field-detail.html", "title": "Field detail" },
+    "crop.planting.list_by_season": { "view": "views/seasons.html", "title": "Seasons & plantings" },
+    "crop.operation.list": { "view": "views/operations.html", "title": "Operations" },
+    "crop.input_lot.list_by_farm": { "view": "views/inventory.html", "title": "Inventory" },
+    "crop.weather.daily": { "view": "views/weather.html", "title": "Sensors & weather" },
+    "crop.trial.list_by_season": { "view": "views/trials.html", "title": "Trials" },
+    "crop.trial.results": { "view": "views/trial-results.html", "title": "Trial results" }
+  }
+}

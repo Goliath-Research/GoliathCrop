@@ -10,10 +10,14 @@ from goliath_crop.actions.catalog import ACTIONS
 def test_phase1_domain_actions_typed() -> None:
     for spec in ACTIONS:
         assert spec.level == ActionLevel.DOMAIN
-        assert spec.resolved_exposure == ActionExposure.RBAC
-        assert spec.required_permission
         assert spec.input_model.model_json_schema()
         assert spec.output_model.model_json_schema()
+        if spec.action_name == "crop.weather.refresh":
+            assert spec.resolved_exposure == ActionExposure.HIDDEN
+            assert spec.required_permission is None
+        else:
+            assert spec.resolved_exposure == ActionExposure.RBAC
+            assert spec.required_permission
 
 
 def test_import_boundaries_action_metadata() -> None:

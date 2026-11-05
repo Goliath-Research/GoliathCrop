@@ -147,3 +147,48 @@ class TrialResultsParams(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     trial_id: int
+
+
+class FarmListParams(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    organization_id: Optional[int] = None
+
+
+class SeasonListParams(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    farm_id: int
+
+
+class InputLotListParams(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    farm_id: int
+
+
+class TrialListParams(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    season_id: int
+
+
+class WeatherRow(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    field_id: int
+    date: date
+    tmin: Optional[float] = None
+    tmax: Optional[float] = None
+    precip: Optional[float] = None
+    gdd: Optional[float] = None
+    et0: Optional[float] = None
+    source: Optional[str] = None
+
+
+class WeatherDailyParams(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    field_id: int
+    from_: Optional[date] = Field(default=None, alias="from")
+    to: Optional[date] = None

@@ -19,6 +19,7 @@ classifiers = [
 ]
 dependencies = [
   "pydantic>=2.6.0,<3.0.0",
+  "psycopg[binary]>=3.1.0,<4.0.0",
   "methyl-gateway @ git+https://github.com/Goliath-Research/GoliathApp.git#subdirectory=workflow_engine",
 ]
 

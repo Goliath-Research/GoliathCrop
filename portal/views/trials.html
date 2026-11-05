@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Crop · Trials</title>
+    <link rel="stylesheet" href="../static/crop-shell.css" />
+  </head>
+  <body>
+    <h1>Research trials</h1>
+    <div class="crop-toolbar">
+      <label>
+        Season ID
+        <input id="seasonId" type="number" value="2026" />
+      </label>
+      <button type="button" id="reloadTrials">Load trials</button>
+    </div>
+    <ul class="crop-list" id="trialList"></ul>
+    <div class="crop-card">
+      <h2>Record observation</h2>
+      <form id="obsForm" class="crop-form-grid">
+        <label>Plot ID <input name="plot_id" type="number" required value="901" /></label>
+        <label>Metric <input name="metric" required value="height_cm" /></label>
+        <label>Value <input name="value" type="number" step="0.01" required value="142" /></label>
+        <button class="primary" type="submit">Save observation</button>
+      </form>
+    </div>
+    <div class="crop-card">
+      <h2>Results</h2>
+      <ul class="crop-list" id="resultList"></ul>
+    </div>
+    <p class="crop-status" id="status"></p>
+    <script src="../static/crop-api.js"></script>
+    <script>
+      const status = document.getElementById("status");
+      let activeTrialId = null;
+
+      async function loadTrials() {
+        const seasonId = Number(document.getElementById("seasonId").value || 2026);
+        const trials = await CropPortal.runSemanticRequest("crop.trial.list_by_season", { season_id: seasonId });
+        document.getElementById("trialList").innerHTML = trials
+          .map(
+            (trial) =>
+              `<li><button type="button" data-trial="${trial.trial_id}"><strong>${trial.name}</strong></button><div class="crop-muted">${trial.design || ""} · ${trial.treatment_count} treatments · ${trial.replicate_count} reps</div></li>`
+          )
+          .join("");
+        document.querySelectorAll("[data-trial]").forEach((btn) =>
+          btn.addEventListener("click", () => loadResults(Number(btn.getAttribute("data-trial"))))
+        );
+        if (trials[0]) {
+          await loadResults(trials[0].trial_id);
+        }
+      }
+
+      async function loadResults(trialId) {
+        activeTrialId = trialId;
+        const rows = await CropPortal.runSemanticRequest("crop.trial.results", { trial_id: trialId });
+        document.getElementById("resultList").innerHTML = rows
+          .map(
+            (row) =>
+              `<li>${row.plot_code} · ${row.treatment_code || ""} · ${row.metric} = ${row.value ?? "—"}</li>`
+          )
+          .join("");
+        CropPortal.setStatus(status, `Trial ${trialId}: ${rows.length} measurement(s)`);
+      }
+
+      document.getElementById("obsForm").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const data = new FormData(event.target);
+        await CropPortal.runAction("crop.trial.record_observation", {
+          plot_id: Number(data.get("plot_id")),
+          metric: String(data.get("metric")),
+          value: Number(data.get("value")),
+        });
+        if (activeTrialId) {
+          await loadResults(activeTrialId);
+        }
+      });
+
+      document.getElementById("reloadTrials").addEventListener("click", () =>
+        loadTrials().catch((e) => CropPortal.setStatus(status, e.message, true))
+      );
+      loadTrials().catch((e) => CropPortal.setStatus(status, e.message, true));
+    </script>
+  </body>
+</html>

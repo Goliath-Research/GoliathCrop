@@ -1,4 +1,4 @@
-"""Domain ActionSpec catalog for GoliathCrop (Phase 1)."""
+"""Domain ActionSpec catalog for GoliathCrop."""
 
 from __future__ import annotations
 
@@ -9,6 +9,10 @@ from goliath_crop.actions.models import (
     FieldImportBoundariesOutput,
     OperationRecordInput,
     OperationRecordOutput,
+    TrialRecordObservationInput,
+    TrialRecordObservationOutput,
+    WeatherRefreshInput,
+    WeatherRefreshOutput,
 )
 
 ACTIONS: list[ActionSpec] = [
@@ -43,5 +47,37 @@ ACTIONS: list[ActionSpec] = [
         capability="crop.ops",
         tool="crop-operation-record",
         in_process_handler="goliath_crop.actions.handlers:handle_operation_record",
+    ),
+    ActionSpec(
+        action_name="crop.weather.refresh",
+        namespace="crop",
+        level=ActionLevel.DOMAIN,
+        entity_code="weather",
+        display_name="Refresh field weather",
+        description="Pull Open-Meteo daily weather for field centroids and upsert crop_obs.weather_daily.",
+        exposure=ActionExposure.HIDDEN,
+        required_permission=None,
+        input_model=WeatherRefreshInput,
+        output_model=WeatherRefreshOutput,
+        schema_version="1",
+        capability="crop.weather",
+        tool="crop-weather-sync",
+        in_process_handler="goliath_crop.actions.handlers:handle_weather_refresh",
+    ),
+    ActionSpec(
+        action_name="crop.trial.record_observation",
+        namespace="crop",
+        level=ActionLevel.DOMAIN,
+        entity_code="trial",
+        display_name="Record trial plot observation",
+        description="Append a plot measurement for a research trial replicate.",
+        exposure=ActionExposure.RBAC,
+        required_permission="crop.trial.write",
+        input_model=TrialRecordObservationInput,
+        output_model=TrialRecordObservationOutput,
+        schema_version="1",
+        capability="crop.ops",
+        tool="crop-trial-observe",
+        in_process_handler="goliath_crop.actions.handlers:handle_trial_record_observation",
     ),
 ]

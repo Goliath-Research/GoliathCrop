@@ -1080,9 +1080,265 @@
       "schema_id": "goliath.semantic/crop/variety/1",
       "schema_version": "1",
       "storage_relation": "crop_core.v_variety"
+    },
+    "crop.weather": {
+      "attributes": [
+        {
+          "code": "field_id",
+          "column_name": "field_id",
+          "filterable_ops": [
+            "eq"
+          ],
+          "json_type": "integer",
+          "role": "filter"
+        },
+        {
+          "code": "date",
+          "column_name": "date",
+          "filterable_ops": [
+            "gte",
+            "lte"
+          ],
+          "json_type": "string",
+          "role": "attribute"
+        },
+        {
+          "code": "tmin",
+          "column_name": "tmin",
+          "filterable_ops": [],
+          "json_type": "number",
+          "role": "measure"
+        },
+        {
+          "code": "tmax",
+          "column_name": "tmax",
+          "filterable_ops": [],
+          "json_type": "number",
+          "role": "measure"
+        },
+        {
+          "code": "precip",
+          "column_name": "precip",
+          "filterable_ops": [],
+          "json_type": "number",
+          "role": "measure"
+        },
+        {
+          "code": "gdd",
+          "column_name": "gdd",
+          "filterable_ops": [],
+          "json_type": "number",
+          "role": "measure"
+        },
+        {
+          "code": "et0",
+          "column_name": "et0",
+          "filterable_ops": [],
+          "json_type": "number",
+          "role": "measure"
+        }
+      ],
+      "catalog_type_name": null,
+      "code": "weather",
+      "content_hash": "516b3e1ad7e9a1f5f4d5aebbf320c09246415fc5241ef72e27dbecd298af05d3",
+      "description": "Daily observed weather aggregated per field.",
+      "display_name": "Weather",
+      "meta_class_id": null,
+      "meta_class_name": null,
+      "namespace": "crop",
+      "row_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "et0": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Et0"
+          },
+          "field_id": {
+            "title": "Field Id",
+            "type": "integer"
+          },
+          "gdd": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Gdd"
+          },
+          "precip": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Precip"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Source"
+          },
+          "tmax": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Tmax"
+          },
+          "tmin": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Tmin"
+          }
+        },
+        "required": [
+          "field_id",
+          "date"
+        ],
+        "title": "WeatherRow",
+        "type": "object"
+      },
+      "row_type": "portal.crop_weather_row",
+      "schema_id": "goliath.semantic/crop/weather/1",
+      "schema_version": "1",
+      "storage_relation": "crop_obs.v_weather_daily"
     }
   },
   "requests": {
+    "crop.farm.list": {
+      "base_namespace": null,
+      "content_hash": "f221049ec4f6df6fbacb95b40000356d834141890f6d0bb152a69c7bfbd817c7",
+      "entity_code": "farm",
+      "filter_template": null,
+      "max_rows": 500,
+      "namespace": "crop",
+      "params_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "organization_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Organization Id"
+          }
+        },
+        "title": "FarmListParams",
+        "type": "object"
+      },
+      "request_code": "crop.farm.list",
+      "required_permission": "crop.field.read",
+      "result_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "farm_id": {
+            "title": "Farm Id",
+            "type": "integer"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Location"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "organization_id": {
+            "title": "Organization Id",
+            "type": "integer"
+          },
+          "timezone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Timezone"
+          },
+          "units": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Units"
+          }
+        },
+        "required": [
+          "farm_id",
+          "organization_id",
+          "name"
+        ],
+        "title": "FarmRow",
+        "type": "object"
+      },
+      "row_type": "portal.crop_farm_row",
+      "schema_id": "goliath.semantic/crop/crop.farm.list/1",
+      "target_kind": "function",
+      "target_name": "crop_core.fn_semantic_farm_list",
+      "version": "1"
+    },
     "crop.field.list_by_farm": {
       "base_namespace": null,
       "content_hash": "88ad172cb9f8bf09fd7c019465199ee23948ba1f52efd3349dcd1c9c3b3d7dbd",
@@ -1182,6 +1438,74 @@
       "schema_id": "goliath.semantic/crop/crop.field.list_by_farm/1",
       "target_kind": "function",
       "target_name": "crop_core.fn_semantic_field_list_by_farm",
+      "version": "1"
+    },
+    "crop.input_lot.list_by_farm": {
+      "base_namespace": null,
+      "content_hash": "9a937866d9afcc1d4c53047dcf83599a1bf09ce36384513636f1aed717f27d30",
+      "entity_code": "input_lot",
+      "filter_template": null,
+      "max_rows": 500,
+      "namespace": "crop",
+      "params_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "farm_id": {
+            "title": "Farm Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "farm_id"
+        ],
+        "title": "InputLotListParams",
+        "type": "object"
+      },
+      "request_code": "crop.input_lot.list_by_farm",
+      "required_permission": "crop.operation.read",
+      "result_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "input_lot_id": {
+            "title": "Input Lot Id",
+            "type": "integer"
+          },
+          "item_id": {
+            "title": "Item Id",
+            "type": "integer"
+          },
+          "item_name": {
+            "title": "Item Name",
+            "type": "string"
+          },
+          "lot": {
+            "title": "Lot",
+            "type": "string"
+          },
+          "on_hand": {
+            "title": "On Hand",
+            "type": "number"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          }
+        },
+        "required": [
+          "input_lot_id",
+          "item_id",
+          "item_name",
+          "lot",
+          "on_hand",
+          "unit"
+        ],
+        "title": "InputLotRow",
+        "type": "object"
+      },
+      "row_type": "portal.crop_input_lot_row",
+      "schema_id": "goliath.semantic/crop/crop.input_lot.list_by_farm/1",
+      "target_kind": "function",
+      "target_name": "crop_ops.fn_semantic_input_lot_list_by_farm",
       "version": "1"
     },
     "crop.operation.list": {
@@ -1441,6 +1765,158 @@
       "target_name": "crop_core.fn_semantic_planting_list_by_season",
       "version": "1"
     },
+    "crop.season.list_by_farm": {
+      "base_namespace": null,
+      "content_hash": "60933a22123e5645f9f587a1ae28fcdbcadfd967524d34d0ffeca28490196a9a",
+      "entity_code": "season",
+      "filter_template": null,
+      "max_rows": 500,
+      "namespace": "crop",
+      "params_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "farm_id": {
+            "title": "Farm Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "farm_id"
+        ],
+        "title": "SeasonListParams",
+        "type": "object"
+      },
+      "request_code": "crop.season.list_by_farm",
+      "required_permission": "crop.planting.read",
+      "result_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "campaign": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Campaign"
+          },
+          "farm_id": {
+            "title": "Farm Id",
+            "type": "integer"
+          },
+          "season_id": {
+            "title": "Season Id",
+            "type": "integer"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "year": {
+            "title": "Year",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "season_id",
+          "farm_id",
+          "year"
+        ],
+        "title": "SeasonRow",
+        "type": "object"
+      },
+      "row_type": "portal.crop_season_row",
+      "schema_id": "goliath.semantic/crop/crop.season.list_by_farm/1",
+      "target_kind": "function",
+      "target_name": "crop_core.fn_semantic_season_list_by_farm",
+      "version": "1"
+    },
+    "crop.trial.list_by_season": {
+      "base_namespace": null,
+      "content_hash": "ba54193b89cbdd2df8fa71efad10fcb4edc182f4517b233e652ad05aaaacf716",
+      "entity_code": "trial",
+      "filter_template": null,
+      "max_rows": 500,
+      "namespace": "crop",
+      "params_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "season_id": {
+            "title": "Season Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "season_id"
+        ],
+        "title": "TrialListParams",
+        "type": "object"
+      },
+      "request_code": "crop.trial.list_by_season",
+      "required_permission": "crop.trial.read",
+      "result_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "design": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Design"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "replicate_count": {
+            "default": 0,
+            "title": "Replicate Count",
+            "type": "integer"
+          },
+          "season_id": {
+            "title": "Season Id",
+            "type": "integer"
+          },
+          "treatment_count": {
+            "default": 0,
+            "title": "Treatment Count",
+            "type": "integer"
+          },
+          "trial_id": {
+            "title": "Trial Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "trial_id",
+          "season_id",
+          "name"
+        ],
+        "title": "TrialRow",
+        "type": "object"
+      },
+      "row_type": "portal.crop_trial_row",
+      "schema_id": "goliath.semantic/crop/crop.trial.list_by_season/1",
+      "target_kind": "function",
+      "target_name": "crop_trial.fn_semantic_trial_list_by_season",
+      "version": "1"
+    },
     "crop.trial.results": {
       "base_namespace": null,
       "content_hash": "14483832fa7257afca69c9432b97c35f2edda66a0eefb380f19f1655d64e2f6a",
@@ -1541,6 +2017,153 @@
       "schema_id": "goliath.semantic/crop/crop.trial.results/1",
       "target_kind": "function",
       "target_name": "crop_trial.fn_trial_results",
+      "version": "1"
+    },
+    "crop.weather.daily": {
+      "base_namespace": null,
+      "content_hash": "5220ccbb9fdec945a9b3d9aa59bda8fd0808ebb2e9b857b975ce5fbcce4367e2",
+      "entity_code": "weather",
+      "filter_template": null,
+      "max_rows": 500,
+      "namespace": "crop",
+      "params_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "field_id": {
+            "title": "Field Id",
+            "type": "integer"
+          },
+          "from": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "From"
+          },
+          "to": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "To"
+          }
+        },
+        "required": [
+          "field_id"
+        ],
+        "title": "WeatherDailyParams",
+        "type": "object"
+      },
+      "request_code": "crop.weather.daily",
+      "required_permission": "crop.weather.read",
+      "result_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "et0": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Et0"
+          },
+          "field_id": {
+            "title": "Field Id",
+            "type": "integer"
+          },
+          "gdd": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Gdd"
+          },
+          "precip": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Precip"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Source"
+          },
+          "tmax": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Tmax"
+          },
+          "tmin": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Tmin"
+          }
+        },
+        "required": [
+          "field_id",
+          "date"
+        ],
+        "title": "WeatherRow",
+        "type": "object"
+      },
+      "row_type": "portal.crop_weather_row",
+      "schema_id": "goliath.semantic/crop/crop.weather.daily/1",
+      "target_kind": "function",
+      "target_name": "crop_obs.fn_semantic_weather_daily",
       "version": "1"
     }
   }

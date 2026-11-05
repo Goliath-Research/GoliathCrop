@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Crop · Inventory</title>
+    <link rel="stylesheet" href="../static/crop-shell.css" />
+  </head>
+  <body>
+    <h1>Inputs inventory</h1>
+    <div class="crop-toolbar">
+      <label>
+        Farm ID
+        <input id="farmId" type="number" value="1" />
+      </label>
+      <button type="button" id="reload">Reload</button>
+    </div>
+    <ul class="crop-list" id="lotList"></ul>
+    <p class="crop-status" id="status"></p>
+    <script src="../static/crop-api.js"></script>
+    <script>
+      const status = document.getElementById("status");
+      const lotList = document.getElementById("lotList");
+      async function load() {
+        const farmId = Number(document.getElementById("farmId").value || 1);
+        const rows = await CropPortal.runSemanticRequest("crop.input_lot.list_by_farm", { farm_id: farmId });
+        lotList.innerHTML = rows
+          .map(
+            (lot) =>
+              `<li><strong>${lot.item_name}</strong> · lot ${lot.lot}<div class="crop-muted">${lot.on_hand} ${lot.unit} on hand</div></li>`
+          )
+          .join("");
+        CropPortal.setStatus(status, `${rows.length} lot(s)`);
+      }
+      document.getElementById("reload").addEventListener("click", () => load().catch((e) => CropPortal.setStatus(status, e.message, true)));
+      load().catch((e) => CropPortal.setStatus(status, e.message, true));
+    </script>
+  </body>
+</html>

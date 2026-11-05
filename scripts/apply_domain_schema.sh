@@ -38,6 +38,8 @@ SCRIPTS=(
   03_crop_trial.sql
   04_rbac_crop.sql
   05_nav_crop.sql
+  06_crop_obs.sql
+  07_crop_semantic_mvp.sql
 )
 
 for name in "${SCRIPTS[@]}"; do

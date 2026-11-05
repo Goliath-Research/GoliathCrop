@@ -5,20 +5,26 @@ from __future__ import annotations
 from goliath_app.semantic.spec import SemanticAttributeSpec, SemanticEntitySpec, SemanticRequestSpec
 
 from goliath_crop.semantic.models import (
+    FarmListParams,
     FieldListParams,
     FieldRow,
     FarmRow,
+    InputLotListParams,
     InputLotRow,
     OperationListParams,
     OperationRow,
     PlantingListParams,
     PlantingRow,
     PlotRow,
+    SeasonListParams,
     SeasonRow,
+    TrialListParams,
     TrialResultRow,
     TrialResultsParams,
     TrialRow,
     VarietyRow,
+    WeatherDailyParams,
+    WeatherRow,
 )
 
 FARM_ENTITY = SemanticEntitySpec(
@@ -225,6 +231,25 @@ TRIAL_ENTITY = SemanticEntitySpec(
     ),
 )
 
+WEATHER_ENTITY = SemanticEntitySpec(
+    namespace="crop",
+    code="weather",
+    display_name="Weather",
+    description="Daily observed weather aggregated per field.",
+    schema_version="1",
+    row_model=WeatherRow,
+    storage_relation="crop_obs.v_weather_daily",
+    attributes=(
+        SemanticAttributeSpec("field_id", "field_id", "integer", "filter", ("eq",)),
+        SemanticAttributeSpec("date", "date", "string", "attribute", ("gte", "lte")),
+        SemanticAttributeSpec("tmin", "tmin", "number", "measure", ()),
+        SemanticAttributeSpec("tmax", "tmax", "number", "measure", ()),
+        SemanticAttributeSpec("precip", "precip", "number", "measure", ()),
+        SemanticAttributeSpec("gdd", "gdd", "number", "measure", ()),
+        SemanticAttributeSpec("et0", "et0", "number", "measure", ()),
+    ),
+)
+
 SEMANTIC_CATALOG: list[SemanticEntitySpec] = [
     FARM_ENTITY,
     FIELD_ENTITY,
@@ -235,9 +260,22 @@ SEMANTIC_CATALOG: list[SemanticEntitySpec] = [
     OPERATION_ENTITY,
     INPUT_LOT_ENTITY,
     TRIAL_ENTITY,
+    WEATHER_ENTITY,
 ]
 
 SEMANTIC_REQUESTS: list[SemanticRequestSpec] = [
+    SemanticRequestSpec(
+        request_code="crop.farm.list",
+        version="1",
+        namespace="crop",
+        entity_code="farm",
+        target_kind="function",
+        target_name="crop_core.fn_semantic_farm_list",
+        params_model=FarmListParams,
+        result_row_model=FarmRow,
+        required_permission="crop.field.read",
+        max_rows=500,
+    ),
     SemanticRequestSpec(
         request_code="crop.field.list_by_farm",
         version="1",
@@ -248,6 +286,18 @@ SEMANTIC_REQUESTS: list[SemanticRequestSpec] = [
         params_model=FieldListParams,
         result_row_model=FieldRow,
         required_permission="crop.field.read",
+        max_rows=500,
+    ),
+    SemanticRequestSpec(
+        request_code="crop.season.list_by_farm",
+        version="1",
+        namespace="crop",
+        entity_code="season",
+        target_kind="function",
+        target_name="crop_core.fn_semantic_season_list_by_farm",
+        params_model=SeasonListParams,
+        result_row_model=SeasonRow,
+        required_permission="crop.planting.read",
         max_rows=500,
     ),
     SemanticRequestSpec(
@@ -272,6 +322,42 @@ SEMANTIC_REQUESTS: list[SemanticRequestSpec] = [
         params_model=OperationListParams,
         result_row_model=OperationRow,
         required_permission="crop.operation.read",
+        max_rows=500,
+    ),
+    SemanticRequestSpec(
+        request_code="crop.input_lot.list_by_farm",
+        version="1",
+        namespace="crop",
+        entity_code="input_lot",
+        target_kind="function",
+        target_name="crop_ops.fn_semantic_input_lot_list_by_farm",
+        params_model=InputLotListParams,
+        result_row_model=InputLotRow,
+        required_permission="crop.operation.read",
+        max_rows=500,
+    ),
+    SemanticRequestSpec(
+        request_code="crop.weather.daily",
+        version="1",
+        namespace="crop",
+        entity_code="weather",
+        target_kind="function",
+        target_name="crop_obs.fn_semantic_weather_daily",
+        params_model=WeatherDailyParams,
+        result_row_model=WeatherRow,
+        required_permission="crop.weather.read",
+        max_rows=500,
+    ),
+    SemanticRequestSpec(
+        request_code="crop.trial.list_by_season",
+        version="1",
+        namespace="crop",
+        entity_code="trial",
+        target_kind="function",
+        target_name="crop_trial.fn_semantic_trial_list_by_season",
+        params_model=TrialListParams,
+        result_row_model=TrialRow,
+        required_permission="crop.trial.read",
         max_rows=500,
     ),
     SemanticRequestSpec(

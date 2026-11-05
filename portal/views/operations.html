@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Crop · Operations</title>
+    <link rel="stylesheet" href="../static/crop-shell.css" />
+  </head>
+  <body>
+    <h1>Operations log</h1>
+    <ul class="crop-list" id="operationList"></ul>
+    <div class="crop-card">
+      <h2>Quick entry</h2>
+      <form id="opForm" class="crop-form-grid">
+        <label>
+          Planting ID
+          <input name="planting_id" type="number" required value="100" />
+        </label>
+        <label>
+          Kind
+          <select name="kind">
+            <option>irrigation</option>
+            <option>fertilization</option>
+            <option>spraying</option>
+            <option>harvest</option>
+            <option>scouting</option>
+          </select>
+        </label>
+        <label>
+          When
+          <input name="performed_on" type="datetime-local" required />
+        </label>
+        <label>
+          Operator
+          <input name="operator" type="text" placeholder="Name" />
+        </label>
+        <button class="primary" type="submit">Record operation</button>
+      </form>
+    </div>
+    <p class="crop-status" id="status"></p>
+    <script src="../static/crop-api.js"></script>
+    <script>
+      const status = document.getElementById("status");
+      const list = document.getElementById("operationList");
+
+      async function refresh() {
+        const rows = await CropPortal.runSemanticRequest("crop.operation.list", {});
+        list.innerHTML = rows
+          .map(
+            (op) =>
+              `<li><strong>${op.kind}</strong> · planting ${op.planting_id}<div class="crop-muted">${new Date(op.performed_on).toLocaleString()}</div></li>`
+          )
+          .join("");
+      }
+
+      document.getElementById("opForm").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const data = new FormData(event.target);
+        const performed = new Date(String(data.get("performed_on")));
+        try {
+          await CropPortal.runAction("crop.operation.record", {
+            planting_id: Number(data.get("planting_id")),
+            kind: String(data.get("kind")),
+            performed_on: performed.toISOString(),
+            operator: String(data.get("operator") || ""),
+          });
+          CropPortal.setStatus(status, "Operation recorded");
+          await refresh();
+        } catch (err) {
+          CropPortal.setStatus(status, err.message, true);
+        }
+      });
+
+      refresh().catch((err) => CropPortal.setStatus(status, err.message, true));
+    </script>
+  </body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Crop · Farm map</title>
+    <link rel="stylesheet" href="../static/crop-shell.css" />
+  </head>
+  <body>
+    <h1>Farm map</h1>
+    <div class="crop-toolbar">
+      <label>
+        Farm
+        <select id="farmSelect"></select>
+      </label>
+    </div>
+    <div class="crop-map" id="mapPane">Select a farm to preview field boundaries.</div>
+    <ul class="crop-list" id="fieldList"></ul>
+    <p class="crop-status" id="status"></p>
+    <script src="../static/crop-api.js"></script>
+    <script>
+      const farmSelect = document.getElementById("farmSelect");
+      const fieldList = document.getElementById("fieldList");
+      const mapPane = document.getElementById("mapPane");
+      const status = document.getElementById("status");
+
+      function renderMap(fields) {
+        if (!fields.length) {
+          mapPane.textContent = "No fields with geometry yet.";
+          return;
+        }
+        mapPane.innerHTML =
+          '<svg viewBox="0 0 100 100" role="img" aria-label="Field sketch">' +
+          fields
+            .map((field, index) => {
+              const x = 10 + (index % 2) * 45;
+              const y = 10 + Math.floor(index / 2) * 40;
+              return `<rect x="${x}" y="${y}" width="35" height="30" fill="#6fbf4a33" stroke="#6fbf4a" />`;
+            })
+            .join("") +
+          "</svg>";
+      }
+
+      async function loadFields(farmId) {
+        CropPortal.setStatus(status, "Loading fields…");
+        const fields = await CropPortal.runSemanticRequest("crop.field.list_by_farm", { farm_id: farmId });
+        fieldList.innerHTML = fields
+          .map(
+            (field) =>
+              `<li><strong>${field.name}</strong><div class="crop-muted">${field.area_ha ?? "—"} ha · ${field.soil_type ?? "soil n/a"}</div>` +
+              `<a href="field-detail.html?farm_id=${farmId}&field_id=${field.field_id}">Open field detail</a></li>`
+          )
+          .join("");
+        renderMap(fields);
+        CropPortal.setStatus(status, `${fields.length} field(s)`);
+      }
+
+      async function init() {
+        const farms = await CropPortal.runSemanticRequest("crop.farm.list", {});
+        farmSelect.innerHTML = farms
+          .map((farm) => `<option value="${farm.farm_id}">${farm.name}</option>`)
+          .join("");
+        farmSelect.addEventListener("change", () => loadFields(Number(farmSelect.value)));
+        if (farms.length) {
+          await loadFields(farms[0].farm_id);
+        }
+      }
+
+      init().catch((err) => CropPortal.setStatus(status, err.message, true));
+    </script>
+  </body>
+</html>
