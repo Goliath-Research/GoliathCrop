@@ -3,7 +3,7 @@
   "id": "goliathcrop",
   "name": "GoliathCrop",
   "tagline": "Crop management on GoliathApp: fields, operations, sensors, imagery, and research trials.",
-  "description": "GoliathCrop specializes GoliathApp for commercial farms and research stations. It records farms, fields and plots (PostGIS), seasons, plantings, operations (irrigation, fertilization, spraying, harvest), inputs inventory, soil and tissue samples, scouting, and yield. Sensor readings live in TimescaleDB hypertables in the same PostgreSQL database behind the stored-procedure API. Satellite and drone rasters are stored as COGs on S3-compatible long-term storage with footprints in PostGIS. DomainPrograms for weather sync, NDVI processing, irrigation scheduling, and alerts claim tasks through goliath-gateway, with Postgres pub/sub wake for event-triggered work. This repository holds the catalog entry and plan; implementation is planned.",
+  "description": "GoliathCrop specializes GoliathApp for commercial farms and research stations. Phase 1 adds PostGIS core schemas (crop_core, crop_ops, crop_trial), the crop semantic namespace, domain ActionSpec catalog, and NavTree extension. Later phases add sensing, imagery, and decision workers.",
   "category": "application",
   "features": [
     {
@@ -31,5 +31,5 @@
   "related": ["goliathapp"],
   "dependsOn": ["goliathapp"],
   "license": "MIT",
-  "status": "planned"
+  "status": "in_development"
 }

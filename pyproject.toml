@@ -1,0 +1,55 @@
+[build-system]
+requires = ["hatchling>=1.21"]
+build-backend = "hatchling.build"
+
+[project]
+name = "goliath-crop"
+version = "0.1.0"
+description = "GoliathApp specialization for crop management (core data, semantic registry, actions)."
+readme = "README.md"
+requires-python = ">=3.10,<3.15"
+license = "MIT"
+authors = [{ name = "Goliath Research" }]
+keywords = ["agriculture", "crop", "postgis", "goliath"]
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+]
+dependencies = [
+  "pydantic>=2.6.0,<3.0.0",
+  "methyl-gateway @ git+https://github.com/Goliath-Research/GoliathApp.git#subdirectory=workflow_engine",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<9", "pyrefly>=1.3.2,<2"]
+
+[project.scripts]
+goliath-crop-semantic-export = "goliath_crop.semantic.export:main"
+goliath-crop-seed-semantic = "goliath_crop.seed.semantic_catalog:main"
+goliath-crop-seed-nav = "goliath_crop.seed.nav_tree:main"
+
+[project.entry-points."goliath.action_catalogs"]
+crop = "goliath_crop.actions.catalog:ACTIONS"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/goliath_crop"]
+
+[tool.pyrefly]
+project-includes = ["src/goliath_crop", "tests"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.isort]
+profile = "black"
+src_paths = ["src", "tests"]
+
+[tool.black]
+line-length = 100
+target-version = ["py310"]
