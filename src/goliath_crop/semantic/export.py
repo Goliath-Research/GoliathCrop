@@ -36,12 +36,22 @@ def request_row_type(req: SemanticRequestSpec, entity: SemanticEntitySpec) -> st
     return f"portal.{_result_row_type_name(req)}"
 
 
+def _pg_type_for_schema_field(field_schema: dict[str, Any]) -> str:
+    any_of = field_schema.get("anyOf")
+    if isinstance(any_of, list):
+        variants = [variant for variant in any_of if variant.get("type") != "null"]
+        if len(variants) == 1:
+            field_schema = variants[0]
+    if field_schema.get("format") == "date":
+        return "date"
+    return _pg_type_for_field(field_schema)
+
+
 def _row_type_sql_block(type_name: str, model_schema: dict[str, Any]) -> List[str]:
     props = model_schema.get("properties", {})
-    required = model_schema.get("required", list(props.keys()))
     field_parts: List[str] = []
-    for name in required:
-        pg_t = _pg_type_for_field(props.get(name, {}))
+    for name, field_schema in props.items():
+        pg_t = _pg_type_for_schema_field(field_schema)
         field_parts.append(f"  {name} {pg_t}")
     fields_sql = ",\n".join(field_parts)
     return [

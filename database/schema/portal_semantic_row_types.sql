@@ -152,7 +152,11 @@ BEGIN
     CREATE TYPE portal.crop_trial_result_row AS (
   plot_id integer,
   plot_code text,
-  metric text
+  treatment_code text,
+  replicate_number integer,
+  metric text,
+  value double precision,
+  measured_on date
     );
   END IF;
 END $$;
